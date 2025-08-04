@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Story Node Creator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Story Node Creator</h1>
+
+  <label>Node ID</label>
+  <input type="text" id="node-id" placeholder="e.g., forestStart" />
+
+  <label>Node Type</label>
+  <input type="text" id="node-type" placeholder="e.g., passage, interactive, inventory" />
+
+  <label>Title</label>
+  <input type="text" id="title" />
+
+  <label>Text</label>
+  <textarea id="text" rows="5"></textarea>
+
+  <div id="choices-container">
+    <h3>Choices</h3>
+  </div>
+  <button onclick="addChoice()">+ Add Choice</button>
+
+  <br><br>
+  <button onclick="saveNode()">✅ Save Node</button>
+  <button onclick="downloadJSON()">💾 Download JSON</button>
+
+  <h3>JSON Preview</h3>
+  <pre id="json-output">{}</pre>
+
+  <script src="script.js"></script>
+</body>
+</html>
