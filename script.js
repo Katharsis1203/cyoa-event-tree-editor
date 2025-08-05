@@ -1,59 +1,80 @@
-const nodes = {};
-const choicesContainer = document.getElementById('choices-container');
-const output = document.getElementById('json-output');
+document.getElementById("add-root").addEventListener("click", () => {
+  const container = document.getElementById("tree-container");
+  container.appendChild(createNodeElement());
+});
 
-function addChoice() {
-  const div = document.createElement('div');
-  div.className = 'choice-container';
-  div.innerHTML = `
-    <label>Choice Text</label>
-    <input type="text" class="choice-text" placeholder="e.g., Run away" />
-    <label>Next Node ID</label>
-    <input type="text" class="choice-next" placeholder="e.g., escapePath" />
-  `;
-  choicesContainer.appendChild(div);
-}
+document.getElementById("export").addEventListener("click", () => {
+  const nodes = [];
+  document.querySelectorAll(".node").forEach(nodeEl => {
+    const node = extractNode(nodeEl);
+    if (node) nodes.push(node);
+  });
 
-function saveNode() {
-  const id = document.getElementById('node-id').value.trim();
-  const type = document.getElementById('node-type').value.trim();
-  const title = document.getElementById('title').value.trim();
-  const text = document.getElementById('text').value.trim();
-
-  if (!id || !type || !text) {
-    alert("Please fill in at least Node ID, Type, and Text.");
-    return;
-  }
-
-  const choiceDivs = document.querySelectorAll('.choice-container');
-  const choices = Array.from(choiceDivs).map(div => {
-    return {
-      text: div.querySelector('.choice-text').value,
-      next: div.querySelector('.choice-next').value
-    };
-  }).filter(c => c.text && c.next);
-
-  nodes[id] = { type, title, text, choices };
-  output.textContent = JSON.stringify(nodes, null, 2);
-
-  // Clear form
-  document.getElementById('node-id').value = '';
-  document.getElementById('node-type').value = '';
-  document.getElementById('title').value = '';
-  document.getElementById('text').value = '';
-  choicesContainer.innerHTML = '<h3>Choices</h3>';
-}
-
-function downloadJSON() {
-  const json = JSON.stringify(nodes, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const filename = nodes[0]?.id || "story-tree";
+  const blob = new Blob([JSON.stringify(nodes, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = 'story-tree.json';
-  document.body.appendChild(a);
+  a.download = `${filename}.json`;
   a.click();
-  document.body.removeChild(a);
   URL.revokeObjectURL(url);
+});
+
+function createNodeElement() {
+  const template = document.getElementById("node-template");
+  const nodeEl = template.content.cloneNode(true);
+
+  const addChoiceBtn = nodeEl.querySelector(".add-choice");
+  const choicesContainer = nodeEl.querySelector(".choices");
+
+  addChoiceBtn.addEventListener("click", () => {
+    const choiceEl = createChoiceElement();
+    choicesContainer.appendChild(choiceEl);
+  });
+
+  return nodeEl;
+}
+
+function createChoiceElement() {
+  const template = document.getElementById("choice-template");
+  const choiceEl = template.content.cloneNode(true);
+
+  const addChildBtn = choiceEl.querySelector(".add-child-node");
+  const childContainer = choiceEl.querySelector(".child-container");
+
+  addChildBtn.addEventListener("click", () => {
+    const childNode = createNodeElement();
+    childContainer.appendChild(childNode);
+  });
+
+  return choiceEl;
+}
+
+function extractNode(nodeEl) {
+  const id = nodeEl.querySelector(".node-id")?.value.trim();
+  const title = nodeEl.querySelector(".node-title")?.value.trim();
+  const text = nodeEl.querySelector(".node-text")?.value.trim();
+
+  if (!id) return null;
+
+  const choices = [];
+  nodeEl.querySelectorAll(":scope > .choices > .choice").forEach(choiceEl => {
+    const choiceText = choiceEl.querySelector(".choice-text")?.value.trim();
+    const nextId = choiceEl.querySelector(".choice-next")?.value.trim();
+    const childNodeEl = choiceEl.querySelector(".child-container .node");
+    const childNode = childNodeEl ? extractNode(childNodeEl) : null;
+
+    const choice = {
+      text: choiceText,
+      next: nextId || (childNode ? childNode.id : undefined)
+    };
+
+    if (childNode) {
+      choices.push({ ...choice, node: childNode });
+    } else {
+      choices.push(choice);
+    }
+  });
+
+  return { id, title, text, choices };
 }

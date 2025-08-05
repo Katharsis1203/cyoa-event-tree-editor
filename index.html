@@ -2,35 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Story Node Creator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Tree Editor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Story Node Creator</h1>
-
-  <label>Node ID</label>
-  <input type="text" id="node-id" placeholder="e.g., forestStart" />
-
-  <label>Node Type</label>
-  <input type="text" id="node-type" placeholder="e.g., passage, interactive, inventory" />
-
-  <label>Title</label>
-  <input type="text" id="title" />
-
-  <label>Text</label>
-  <textarea id="text" rows="5"></textarea>
-
-  <div id="choices-container">
-    <h3>Choices</h3>
+  <div id="editor">
+    <h1>Event Tree Editor</h1>
+    <div id="tree-container"></div>
+    <button id="add-root">Add Root Node</button>
+    <button id="export">Export JSON</button>
   </div>
-  <button onclick="addChoice()">+ Add Choice</button>
 
-  <br><br>
-  <button onclick="saveNode()">✅ Save Node</button>
-  <button onclick="downloadJSON()">💾 Download JSON</button>
+  <template id="node-template">
+    <div class="node">
+      <label>Node ID: <input type="text" class="node-id" /></label>
+      <label>Title: <input type="text" class="node-title" /></label>
+      <label>Text: <textarea class="node-text"></textarea></label>
+      <div class="choices"></div>
+      <button class="add-choice">Add Choice</button>
+    </div>
+  </template>
 
-  <h3>JSON Preview</h3>
-  <pre id="json-output">{}</pre>
+  <template id="choice-template">
+    <div class="choice">
+      <label>Choice Text: <input type="text" class="choice-text" /></label>
+      <label>Next Node ID: <input type="text" class="choice-next" /></label>
+      <button class="add-child-node">Add Child Node</button>
+      <div class="child-container"></div>
+    </div>
+  </template>
 
   <script src="script.js"></script>
 </body>
