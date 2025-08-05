@@ -1,0 +1,24 @@
+[
+  {
+    "id": "Town1.0",
+    "title": "Town Gates",
+    "text": "You arrive at the town gates",
+    "choices": [
+      {
+        "text": "Enter",
+        "next": "Town1.1"
+      }
+    ]
+  },
+  {
+    "id": "Town1.1",
+    "title": "You Enter",
+    "text": "You walk into town",
+    "choices": [
+      {
+        "text": "Leave",
+        "next": "Town1.0"
+      }
+    ]
+  }
+]

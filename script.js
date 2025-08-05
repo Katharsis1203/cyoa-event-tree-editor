@@ -3,26 +3,16 @@ document.getElementById("add-root").addEventListener("click", () => {
   container.appendChild(createNodeElement());
 });
 
-document.getElementById("export").addEventListener("click", () => {
-  const nodes = [];
-  document.querySelectorAll(".node").forEach(nodeEl => {
-    const node = extractNode(nodeEl);
-    if (node) nodes.push(node);
-  });
+document.getElementById("export").addEventListener("click", exportJSON);
 
-  const filename = nodes[0]?.id || "story-tree";
-  const blob = new Blob([JSON.stringify(nodes, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${filename}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-function createNodeElement() {
+function createNodeElement(prefilledId = "") {
   const template = document.getElementById("node-template");
   const nodeEl = template.content.cloneNode(true);
+
+  if (prefilledId) {
+    const idInput = nodeEl.querySelector(".node-id");
+    idInput.value = prefilledId;
+  }
 
   const addChoiceBtn = nodeEl.querySelector(".add-choice");
   const choicesContainer = nodeEl.querySelector(".choices");
@@ -39,12 +29,24 @@ function createChoiceElement() {
   const template = document.getElementById("choice-template");
   const choiceEl = template.content.cloneNode(true);
 
+  const nextIdInput = choiceEl.querySelector(".choice-next");
   const addChildBtn = choiceEl.querySelector(".add-child-node");
   const childContainer = choiceEl.querySelector(".child-container");
 
+  // Show the "Describe Destination Node" button when there's input
+  nextIdInput.addEventListener("input", () => {
+    addChildBtn.style.display = nextIdInput.value.trim() ? "inline-block" : "none";
+  });
+
   addChildBtn.addEventListener("click", () => {
-    const childNode = createNodeElement();
-    childContainer.appendChild(childNode);
+    const existing = childContainer.querySelector(".node");
+    if (existing) return; // Prevent adding multiple
+
+    const nextId = nextIdInput.value.trim();
+    if (!nextId) return;
+
+    const newNode = createNodeElement(nextId);
+    childContainer.appendChild(newNode);
   });
 
   return choiceEl;
@@ -77,4 +79,57 @@ function extractNode(nodeEl) {
   });
 
   return { id, title, text, choices };
+}
+
+function exportJSON() {
+  const allNodes = {};
+  const rootNodes = [];
+
+  function collectNode(node) {
+    if (!node.id || allNodes[node.id]) return;
+    const flatNode = {
+      id: node.id,
+      title: node.title,
+      text: node.text,
+      choices: []
+    };
+
+    for (const choice of (node.choices || [])) {
+      flatNode.choices.push({
+        text: choice.text,
+        next: choice.next
+      });
+
+      if (choice.node) {
+        collectNode(choice.node);
+      }
+    }
+
+    allNodes[node.id] = flatNode;
+  }
+
+  // Gather root nodes and build tree
+  const rootNodeContainers = document.querySelectorAll('.node-container > .node');
+  rootNodeContainers.forEach(container => {
+    const node = extractNode(container);
+    if (node) {
+      rootNodes.push(node);
+      collectNode(node);
+    }
+  });
+
+  // Final order: root nodes first, then the rest
+  const sortedArray = [
+    ...rootNodes.map(root => allNodes[root.id]),
+    ...Object.values(allNodes).filter(n => !rootNodes.some(root => root.id === n.id))
+  ];
+
+  const blob = new Blob([JSON.stringify(sortedArray, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const rootId = sortedArray[0]?.id?.replace(/\./g, "-") || "story-tree";
+  a.href = url;
+  a.download = `${rootId}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

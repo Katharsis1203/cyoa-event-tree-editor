@@ -1,0 +1,24 @@
+[
+  {
+    "id": "Crossroads1.0",
+    "title": "Crossroads",
+    "text": "You stand at the crossroads.",
+    "choices": [
+      {
+        "text": "Town",
+        "next": "Crossroads1.1"
+      }
+    ]
+  },
+  {
+    "id": "Crossroads1.1",
+    "title": "Walk Towards Town",
+    "text": "you walk towards town",
+    "choices": [
+      {
+        "text": "You Arrive",
+        "next": "Town1.0"
+      }
+    ]
+  }
+]

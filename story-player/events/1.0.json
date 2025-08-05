@@ -1,0 +1,67 @@
+[
+  {
+    "id": "1.0",
+    "title": "Ambushed",
+    "text": "Nigga you got ambushed",
+    "choices": [
+      {
+        "text": "Shieeeeet",
+        "next": "1.1",
+        "node": {
+          "id": "1.1",
+          "title": "Oh shit",
+          "text": "You stand there dumbfounded, how could this be?",
+          "choices": [
+            {
+              "text": "You die",
+              "next": "9.0"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Run Away",
+        "next": "1.2",
+        "node": {
+          "id": "1.2",
+          "title": "Run!",
+          "text": "You run away like a little bitch nigga",
+          "choices": [
+            {
+              "text": "You get caught",
+              "next": "9.0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "1.1",
+    "title": "Oh shit",
+    "text": "You stand there dumbfounded, how could this be?",
+    "choices": [
+      {
+        "text": "You die",
+        "next": "9.0"
+      }
+    ]
+  },
+  {
+    "id": "1.2",
+    "title": "Run!",
+    "text": "You run away like a little bitch nigga",
+    "choices": [
+      {
+        "text": "You get caught",
+        "next": "9.0"
+      }
+    ]
+  },
+  {
+    "id": "9.0",
+    "title": "Dead",
+    "text": "You Dead",
+    "choices": []
+  }
+]
