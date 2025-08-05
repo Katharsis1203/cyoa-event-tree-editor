@@ -2,45 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Event Tree Editor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="editor">
     <h1>Event Tree Editor</h1>
+
+    <label for="filename-input" title="Choose a name for your story event file">Filename:</label>
+    <input type="text" id="filename-input" placeholder="e.g. crossroad-events" />
+
     <div id="tree-container" class="node-container"></div>
     <button id="add-root">Add Root Node</button>
     <button id="export">Export JSON</button>
   </div>
 
-  <!-- Node Template -->
   <template id="node-template">
     <div class="node">
-      <label title="Unique ID for this event node. Example: 'Town1.0' or '1.2'">
-        Node ID: <input type="text" class="node-id" />
-      </label>
-      <label title="Optional short title for internal organization or display">
-        Title: <input type="text" class="node-title" />
-      </label>
-      <label title="The main text that appears during this event">
-        Text: <textarea class="node-text"></textarea>
+      <label>Node ID: <input type="text" class="node-id" /></label>
+      <label>Title: <input type="text" class="node-title" /></label>
+      <label>Text: <textarea class="node-text"></textarea></label>
+      <label title="Optional image to display during this event. Use a full URL or filename.">
+        Image (optional): <input type="text" class="node-image" />
       </label>
       <div class="choices"></div>
       <button class="add-choice">Add Choice</button>
     </div>
   </template>
 
-  <!-- Choice Template -->
   <template id="choice-template">
     <div class="choice">
-      <label title="What the player sees as the clickable choice">
-        Choice Text: <input type="text" class="choice-text" />
+      <label>Choice Text: <input type="text" class="choice-text" /></label>
+      <label title="The ID of the node this choice leads to (if not defined via child node)">
+        Next Node ID: <input type="text" class="choice-next" />
       </label>
-      <label title="ID of the node this choice leads to. Must match another Node ID.">
-        Destination Node ID: <input type="text" class="choice-next" />
-      </label>
-      <button class="add-child-node" style="display: none;">Describe Destination Node</button>
+      <button class="add-child-node">Describe Node</button>
       <div class="child-container"></div>
     </div>
   </template>

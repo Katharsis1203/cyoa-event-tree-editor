@@ -1,0 +1,37 @@
+[
+  {
+    "id": "start1.1",
+    "title": "Deep Forest",
+    "text": "Tall trees surround you. Something moves in the shadows.",
+    "choices": [
+      {
+        "text": "Run Back",
+        "next": "start1.0"
+      }
+    ],
+    "image": "deep_forest.jpg"
+  },
+  {
+    "id": "start1.2",
+    "title": "Village Path",
+    "text": "You walk back towards the warm lights of the village.",
+    "choices": [],
+    "image": "village.jpg"
+  },
+  {
+    "id": "start1.0",
+    "title": "Forest Edge",
+    "text": "You stand at the edge of a dark forest. The wind howls.",
+    "choices": [
+      {
+        "text": "Enter the forest",
+        "next": "start1.1"
+      },
+      {
+        "text": "Return to village",
+        "next": "start1.2"
+      }
+    ],
+    "image": "forest.jpg"
+  }
+]

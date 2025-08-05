@@ -3,57 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Play CYOA</title>
+  <title>Story Player</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="ui-wrapper">
-    <header>
-      <h1>Choose Your Own Adventure</h1>
-      <input type="file" id="fileInput" />
-    </header>
-
-    <main id="main-container">
-      <!-- Left Panel: Story Area -->
-      <section id="story-panel">
-        <div id="game" class="hidden">
-          <h2 id="nodeTitle"></h2>
-          <p id="nodeText"></p>
-          <div id="choices"></div>
-        </div>
-      </section>
-
-      <!-- Right Panel: Player Info -->
-      <aside id="sidebar">
-        <div id="character-section" class="info-box">
-          <h3>Character</h3>
-          <p>Name: <span id="charName">Unnamed</span></p>
-          <p>Health: <span id="charHealth">100</span></p>
-          <!-- Add more stats here -->
-        </div>
-
-        <div id="inventory-section" class="info-box">
-          <h3>Inventory</h3>
-          <ul id="inventoryList">
-            <!-- Items will go here -->
-          </ul>
-        </div>
-
-        <div id="journal-section" class="info-box">
-          <h3>Journal</h3>
-          <ul id="journalEntries">
-            <!-- Journal entries will go here -->
-          </ul>
-        </div>
-
-        <div id="menu-section" class="info-box">
-          <h3>Menu</h3>
-          <button id="saveBtn">Save</button>
-          <button id="loadBtn">Load</button>
-          <button id="settingsBtn">Settings</button>
-        </div>
-      </aside>
-    </main>
+  <div id="player">
+    <h1 id="node-title">Story Title</h1>
+    <div id="image-container">
+      <img id="node-image" src="" alt="" style="display:none; max-width: 100%; border: 1px solid #444;" />
+    </div>
+    <p id="node-text">Story text will go here...</p>
+    <div id="choices-container"></div>
+    <input type="file" id="file-input" accept=".json" />
   </div>
 
   <script src="script.js"></script>

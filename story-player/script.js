@@ -1,72 +1,69 @@
+let storyData = [];
+let currentNode = null;
 
-let currentNodes = {};
-let currentNodeId = null;
-
-document.getElementById("fileInput").addEventListener("change", function (e) {
-  const file = e.target.files[0];
+document.getElementById("file-input").addEventListener("change", function(event) {
+  const file = event.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function (e) {
+  reader.onload = function(e) {
     try {
-      const data = JSON.parse(e.target.result);
-      currentNodes = {};
-      data.forEach(node => {
-        currentNodes[node.id] = node;
-      });
-      currentNodeId = data[0].id;
-      displayNode(currentNodeId);
+      storyData = JSON.parse(e.target.result);
+      const startNode = storyData[0];
+      displayNode(startNode);
     } catch (err) {
-      alert("Failed to parse JSON");
+      alert("Failed to parse JSON file.");
+      console.error(err);
     }
   };
   reader.readAsText(file);
 });
 
-function displayNode(id) {
-  const node = currentNodes[id];
-  if (!node) {
-    alert("Node not found: " + id);
+function displayNode(node) {
+  currentNode = node;
+  document.getElementById("node-title").textContent = node.title;
+  document.getElementById("node-text").textContent = node.text;
+
+  const imageEl = document.getElementById("node-image");
+  if (node.image) {
+    imageEl.src = `images/${node.image}`;
+    imageEl.style.display = "block";
+  } else {
+    imageEl.style.display = "none";
+  }
+
+  const choicesContainer = document.getElementById("choices-container");
+  choicesContainer.innerHTML = "";
+
+  if (!node.choices || node.choices.length === 0) {
+    const endMessage = document.createElement("p");
+    endMessage.textContent = "The end.";
+    choicesContainer.appendChild(endMessage);
     return;
   }
 
-  document.getElementById("game").classList.remove("hidden");
-  document.getElementById("nodeTitle").textContent = node.title;
-  document.getElementById("nodeText").textContent = node.text;
-
-  const choicesContainer = document.getElementById("choices");
-  choicesContainer.innerHTML = "";
   node.choices.forEach(choice => {
     const button = document.createElement("button");
     button.textContent = choice.text;
-    button.onclick = () => handleChoice(choice.next);
+    button.addEventListener("click", () => {
+      const nextNode = storyData.find(n => n.id === choice.next);
+      if (nextNode) {
+        displayNode(nextNode);
+      } else {
+        const fallbackFile = `events/${choice.next.replace(/\./g, "-")}.json`;
+        fetch(fallbackFile)
+          .then(res => res.json())
+          .then(newData => {
+            storyData = newData;
+            const newStartNode = storyData.find(n => n.id === choice.next) || storyData[0];
+            displayNode(newStartNode);
+          })
+          .catch(err => {
+            console.error("Failed to load file:", fallbackFile);
+            alert("Could not load next event.");
+          });
+      }
+    });
     choicesContainer.appendChild(button);
   });
-}
-
-
-function handleChoice(nextId) {
-  if (currentNodes[nextId]) {
-    displayNode(nextId);
-  } else {
-    const fileName = nextId.replace(/\./g, "-") + ".json";
-    fetch("events/" + fileName)
-      .then(res => {
-        if (!res.ok) throw new Error("File not found");
-        return res.json();
-      })
-      .then(data => {
-        data.forEach(node => {
-          currentNodes[node.id] = node;
-        });
-        if (currentNodes[nextId]) {
-          displayNode(nextId);
-        } else {
-          alert("Node not found even after loading file.");
-        }
-      })
-      .catch(() => {
-        alert("Failed to load file: " + fileName);
-      });
-  }
 }

@@ -5,14 +5,14 @@ document.getElementById("add-root").addEventListener("click", () => {
 
 document.getElementById("export").addEventListener("click", exportJSON);
 
-function createNodeElement(prefilledId = "") {
+function createNodeElement(id = "", title = "", text = "", image = "") {
   const template = document.getElementById("node-template");
   const nodeEl = template.content.cloneNode(true);
 
-  if (prefilledId) {
-    const idInput = nodeEl.querySelector(".node-id");
-    idInput.value = prefilledId;
-  }
+  nodeEl.querySelector(".node-id").value = id;
+  nodeEl.querySelector(".node-title").value = title;
+  nodeEl.querySelector(".node-text").value = text;
+  nodeEl.querySelector(".node-image").value = image;
 
   const addChoiceBtn = nodeEl.querySelector(".add-choice");
   const choicesContainer = nodeEl.querySelector(".choices");
@@ -29,24 +29,13 @@ function createChoiceElement() {
   const template = document.getElementById("choice-template");
   const choiceEl = template.content.cloneNode(true);
 
-  const nextIdInput = choiceEl.querySelector(".choice-next");
   const addChildBtn = choiceEl.querySelector(".add-child-node");
   const childContainer = choiceEl.querySelector(".child-container");
 
-  // Show the "Describe Destination Node" button when there's input
-  nextIdInput.addEventListener("input", () => {
-    addChildBtn.style.display = nextIdInput.value.trim() ? "inline-block" : "none";
-  });
-
   addChildBtn.addEventListener("click", () => {
-    const existing = childContainer.querySelector(".node");
-    if (existing) return; // Prevent adding multiple
-
-    const nextId = nextIdInput.value.trim();
-    if (!nextId) return;
-
-    const newNode = createNodeElement(nextId);
-    childContainer.appendChild(newNode);
+    const nextId = choiceEl.querySelector(".choice-next")?.value.trim();
+    const childNode = createNodeElement(nextId); // Pre-fill child node ID
+    childContainer.appendChild(childNode);
   });
 
   return choiceEl;
@@ -56,6 +45,7 @@ function extractNode(nodeEl) {
   const id = nodeEl.querySelector(".node-id")?.value.trim();
   const title = nodeEl.querySelector(".node-title")?.value.trim();
   const text = nodeEl.querySelector(".node-text")?.value.trim();
+  const image = nodeEl.querySelector(".node-image")?.value.trim();
 
   if (!id) return null;
 
@@ -78,15 +68,17 @@ function extractNode(nodeEl) {
     }
   });
 
-  return { id, title, text, choices };
+  const node = { id, title, text, choices };
+  if (image) node.image = image;
+  return node;
 }
 
 function exportJSON() {
   const allNodes = {};
-  const rootNodes = [];
 
   function collectNode(node) {
     if (!node.id || allNodes[node.id]) return;
+
     const flatNode = {
       id: node.id,
       title: node.title,
@@ -94,12 +86,10 @@ function exportJSON() {
       choices: []
     };
 
-    for (const choice of (node.choices || [])) {
-      flatNode.choices.push({
-        text: choice.text,
-        next: choice.next
-      });
+    if (node.image) flatNode.image = node.image;
 
+    for (const choice of node.choices || []) {
+      flatNode.choices.push({ text: choice.text, next: choice.next });
       if (choice.node) {
         collectNode(choice.node);
       }
@@ -108,28 +98,24 @@ function exportJSON() {
     allNodes[node.id] = flatNode;
   }
 
-  // Gather root nodes and build tree
   const rootNodeContainers = document.querySelectorAll('.node-container > .node');
   rootNodeContainers.forEach(container => {
     const node = extractNode(container);
     if (node) {
-      rootNodes.push(node);
       collectNode(node);
     }
   });
 
-  // Final order: root nodes first, then the rest
-  const sortedArray = [
-    ...rootNodes.map(root => allNodes[root.id]),
-    ...Object.values(allNodes).filter(n => !rootNodes.some(root => root.id === n.id))
-  ];
+  const finalArray = Object.values(allNodes);
 
-  const blob = new Blob([JSON.stringify(sortedArray, null, 2)], { type: "application/json" });
+  let filenameInput = document.getElementById("filename-input")?.value.trim();
+  if (!filenameInput) filenameInput = "story-events";
+
+  const blob = new Blob([JSON.stringify(finalArray, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const rootId = sortedArray[0]?.id?.replace(/\./g, "-") || "story-tree";
   a.href = url;
-  a.download = `${rootId}.json`;
+  a.download = `${filenameInput}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
