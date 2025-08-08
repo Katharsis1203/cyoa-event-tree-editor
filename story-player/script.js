@@ -1,15 +1,21 @@
+import { playerState, applyEffects } from './player.js';
+import { isChoiceAvailable } from './logic.js';
+
 let storyData = [];
 let currentNode = null;
 
-document.getElementById("file-input").addEventListener("change", function(event) {
+document.getElementById("file-input").addEventListener("change", function (event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  playerState.fileName = file.name;
+
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       storyData = JSON.parse(e.target.result);
       const startNode = storyData[0];
+      playerState.nodeId = startNode.id;
       displayNode(startNode);
     } catch (err) {
       alert("Failed to parse JSON file.");
@@ -21,15 +27,28 @@ document.getElementById("file-input").addEventListener("change", function(event)
 
 function displayNode(node) {
   currentNode = node;
+
   document.getElementById("node-title").textContent = node.title;
   document.getElementById("node-text").textContent = node.text;
 
-  const imageEl = document.getElementById("node-image");
-  if (node.image) {
-    imageEl.src = `images/${node.image}`;
-    imageEl.style.display = "block";
+  if (node.background) {
+    document.body.style.backgroundImage = `url('images/${node.background}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
   } else {
-    imageEl.style.display = "none";
+    document.body.style.backgroundImage = '';
+  }
+
+  const imageEl = document.getElementById("node-image");
+  const imageContainer = document.getElementById("node-image-container");
+  if (imageEl && imageContainer) {
+    if (node.image) {
+      imageEl.src = `images/${node.image}`;
+      imageContainer.style.display = "block";
+    } else {
+      imageContainer.style.display = "none";
+    }
   }
 
   const choicesContainer = document.getElementById("choices-container");
@@ -43,11 +62,15 @@ function displayNode(node) {
   }
 
   node.choices.forEach(choice => {
+    if (!isChoiceAvailable(choice)) return;
+
     const button = document.createElement("button");
     button.textContent = choice.text;
     button.addEventListener("click", () => {
+      applyEffects(choice.effects);
       const nextNode = storyData.find(n => n.id === choice.next);
       if (nextNode) {
+        playerState.nodeId = nextNode.id;
         displayNode(nextNode);
       } else {
         const fallbackFile = `events/${choice.next.replace(/\./g, "-")}.json`;
@@ -56,6 +79,7 @@ function displayNode(node) {
           .then(newData => {
             storyData = newData;
             const newStartNode = storyData.find(n => n.id === choice.next) || storyData[0];
+            playerState.nodeId = newStartNode.id;
             displayNode(newStartNode);
           })
           .catch(err => {
@@ -66,4 +90,17 @@ function displayNode(node) {
     });
     choicesContainer.appendChild(button);
   });
+
+  renderStats();
+}
+
+function renderStats() {
+  const statsList = document.getElementById("stats-list");
+  statsList.innerHTML = "";
+
+  for (let stat in playerState.stats) {
+    const li = document.createElement("li");
+    li.textContent = `${stat}: ${playerState.stats[stat]}`;
+    statsList.appendChild(li);
+  }
 }

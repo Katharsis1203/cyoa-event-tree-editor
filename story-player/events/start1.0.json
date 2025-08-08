@@ -1,5 +1,29 @@
 [
   {
+    "id": "start1.0",
+    "title": "Forest Edge",
+    "text": "You stand at the edge of a dark forest. The wind howls.",
+    "choices": [
+      {
+        "text": "Enter the forest",
+        "next": "start1.1",
+        "effects": {
+          "stats": {
+            "health": -5,
+            "dexterity": 1
+          },
+          "inventoryAdd": ["Scraped Map"]
+        }
+      },
+      {
+        "text": "Return to village",
+        "next": "start1.2"
+      }
+    ],
+    "image": "forest.jpg",
+    "background": "forest.jpg"
+  },
+  {
     "id": "start1.1",
     "title": "Deep Forest",
     "text": "Tall trees surround you. Something moves in the shadows.",
@@ -7,31 +31,91 @@
       {
         "text": "Run Back",
         "next": "start1.0"
+      },
+      {
+        "text": "Investigate the sound",
+        "next": "start1.3",
+        "requires": {
+          "stats": {
+            "dexterity": 3
+          }
+        }
       }
     ],
-    "image": "deep_forest.jpg"
+    "image": "deep_forest.jpg",
+    "background": "forest.jpg"
   },
   {
     "id": "start1.2",
     "title": "Village Path",
     "text": "You walk back towards the warm lights of the village.",
-    "choices": [],
-    "image": "village.jpg"
-  },
-  {
-    "id": "start1.0",
-    "title": "Forest Edge",
-    "text": "You stand at the edge of a dark forest. The wind howls.",
     "choices": [
       {
-        "text": "Enter the forest",
-        "next": "start1.1"
-      },
-      {
-        "text": "Return to village",
-        "next": "start1.2"
+        "text": "Knock on the tavern door",
+        "next": "start1.4",
+        "requires": {
+          "inventory": ["Scraped Map"]
+        }
       }
     ],
-    "image": "forest.jpg"
+    "image": "village.jpg",
+    "background": "forest.jpg"
+  },
+  {
+    "id": "start1.3",
+    "title": "Forest Glade",
+    "text": "You find a glade where an injured animal lies. It watches you warily.",
+    "choices": [
+      {
+        "text": "Help the animal",
+        "next": "start1.5",
+        "effects": {
+          "flags": {
+            "helpedAnimal": true
+          },
+          "stats": {
+            "intelligence": 1
+          }
+        }
+      },
+      {
+        "text": "Leave it",
+        "next": "start1.1"
+      }
+    ],
+    "image": "glade.jpg",
+    "background": "forest.jpg"
+  },
+  {
+    "id": "start1.4",
+    "title": "Tavern Inside",
+    "text": "The tavern keeper lets you in after seeing your map. You’re safe. For now.",
+    "choices": [],
+    "image": "tavern.jpg",
+    "background": "tavern_interior.jpg"
+  },
+  {
+    "id": "start1.5",
+    "title": "Animal Companion",
+    "text": "The animal limps away, then returns with a worn leather pouch in its jaws.",
+    "choices": [
+      {
+        "text": "Take the pouch",
+        "next": "start1.6",
+        "effects": {
+          "inventoryAdd": ["Leather Pouch"]
+        }
+      }
+    ],
+    "image": "animal.jpg",
+    "background": "forest.jpg"
+  },
+  {
+    "id": "start1.6",
+    "title": "Hidden Cache",
+    "text": "Inside the pouch is a strange key and a note hinting at treasure beneath the glade.",
+    "choices": [],
+    "image": "pouch.jpg",
+    "background": "forest.jpg"
   }
 ]

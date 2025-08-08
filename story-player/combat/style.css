@@ -1,0 +1,22 @@
+body{
+    background-image: url(../images/parchment-bg.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+#combat-container{
+    background-image: url(../images/parchment.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 420px;
+    margin: auto;
+    filter:drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    max-width:720px;
+
+}
+
+#enemy-container{
+    background-color: gray;
+    background-image: url(../images/parchment.png);
+    height: 420px;
+    width: 80%;
+}

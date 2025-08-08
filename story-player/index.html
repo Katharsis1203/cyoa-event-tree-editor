@@ -2,21 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Story Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elfquest</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="player">
-    <h1 id="node-title">Story Title</h1>
-    <div id="image-container">
-      <img id="node-image" src="" alt="" style="display:none; max-width: 100%; border: 1px solid #444;" />
-    </div>
-    <p id="node-text">Story text will go here...</p>
-    <div id="choices-container"></div>
-    <input type="file" id="file-input" accept=".json" />
+  <div id="main-container">
+
+<div id="notification-box">
+  <!-- Notifications will be inserted here -->
+</div>
+
+    <section id="story-panel">
+      <div id="story-box">
+        <input type="file" id="file-input" accept=".json" />
+        <h1 id="node-title">Story Title</h1>
+        <p id="node-text">Story text will go here...</p>
+
+        <div id="node-image-container">
+          <img id="node-image" src="" alt="Node Image" />
+          <hr class="node-underline" />
+        </div>
+
+        <div id="choices-container"></div>
+
+        <div id="stats-panel">
+          <h2>Your Stats</h2>
+          <ul id="stats-list"></ul>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
