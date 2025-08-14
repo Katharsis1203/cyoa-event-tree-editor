@@ -1,0 +1,43 @@
+body{
+    background-image: url(./images/parchment-bg.png);
+    background-size: cover;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+main{
+    background-image: url(./images/parchment.png);
+    background-size: 100% 100%;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    padding: 40px;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    width: 100%;
+    margin-top: 40px;
+    max-width: 600px;
+}
+
+#event-handler{
+    display: flex;
+    flex-flow: column nowrap;
+
+}
+
+#event-container{
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+    margin-bottom: 20px;
+
+}
+.event-box{
+    width: 150px;
+    height: 75px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+    inset 3px 3px 6px rgba(0,0,0,0.3),
+    inset -3px -3px 6px rgba(255,255,255,0.5);
+}

@@ -49,3 +49,7 @@ export function applyEffects(effects) {
   }
 }
 
+export function getPlayerState(playerStat){
+  return playerState.stats[playerStat];
+}
+

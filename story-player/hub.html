@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hub</title>
+    <link rel="stylesheet" href="hub.css" />
+</head>
+
+<body>
+    <main>
+        <section id="event-handler">
+            <h1 id="event-display-title">Events</h1>
+            <div id="event-container">
+                <div class="event-box"></div>
+                <div class="event-box"></div>
+                <div class="event-box"></div>
+            </div>
+            <div id="action-container">
+                <button class="action-btn" id="explore-btn">Explore</button>
+                <button class="action-btn" id="self-btn">Self</button>
+            </div>
+        </section>
+    </main>
+</body>
+
+<template id="event-template">
+    <div class="event-card">
+        <h1 class="event-card-title"></h1>
+        <img class="event-card-image" width="150px">
+        <button class="delete-event-btn">Delete</button>
+    </div>
+</template>
+
+<script type="module" src="hub.js"></script>
+
+</html>

@@ -1,4 +1,4 @@
-import { hasRequiredStats, hasItems, hasFlags } from './player.js';
+import { hasRequiredStats, hasItems, hasFlags, getPlayerState } from './player.js';
 
 export function isChoiceAvailable(choice) {
     const req = choice.requires;

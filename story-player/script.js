@@ -1,22 +1,23 @@
-import { playerState, applyEffects } from './player.js';
+import { applyEffects, playerState, getPlayerState } from './player.js';
 import { isChoiceAvailable } from './logic.js';
 
-let storyData = [];
-let currentNode = null;
+let currentNodes = {};
+let currentNodeId = null;
 
 document.getElementById("file-input").addEventListener("change", function (event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  playerState.fileName = file.name;
-
   const reader = new FileReader();
   reader.onload = function (e) {
     try {
-      storyData = JSON.parse(e.target.result);
-      const startNode = storyData[0];
-      playerState.nodeId = startNode.id;
-      displayNode(startNode);
+      const data = JSON.parse(e.target.result);
+      currentNodes = {};
+      data.forEach(node => {
+        currentNodes[node.id] = node;
+      });
+      currentNodeId = data[0].id;
+      displayNode(currentNodeId);
     } catch (err) {
       alert("Failed to parse JSON file.");
       console.error(err);
@@ -24,13 +25,27 @@ document.getElementById("file-input").addEventListener("change", function (event
   };
   reader.readAsText(file);
 });
+function renderStats() {
+  const ul = document.getElementById("stats-list");
+  if (!ul) return;
+  ul.innerHTML = "";
+  for (const [k, v] of Object.entries(playerState.stats || {})) {
+    const li = document.createElement('li');
+    li.textContent = `${k}: ${v}`;
+    ul.appendChild(li);
+  }
+}
+function displayNode(id) {
+  const node = currentNodes[id];
+  if (!node) {
+    alert("Node not found: " + id);
+    return;
+  }
 
-function displayNode(node) {
-  currentNode = node;
+  currentNodeId = id;
 
   document.getElementById("node-title").textContent = node.title;
   document.getElementById("node-text").textContent = node.text;
-
   if (node.background) {
     document.body.style.backgroundImage = `url('images/${node.background}')`;
     document.body.style.backgroundSize = 'cover';
@@ -42,13 +57,12 @@ function displayNode(node) {
 
   const imageEl = document.getElementById("node-image");
   const imageContainer = document.getElementById("node-image-container");
-  if (imageEl && imageContainer) {
-    if (node.image) {
-      imageEl.src = `images/${node.image}`;
-      imageContainer.style.display = "block";
-    } else {
-      imageContainer.style.display = "none";
-    }
+
+  if (node.image) {
+    imageEl.src = `images/${node.image}`;
+    imageContainer.style.display = "block";
+  } else {
+    imageContainer.style.display = "none";
   }
 
   const choicesContainer = document.getElementById("choices-container");
@@ -62,45 +76,37 @@ function displayNode(node) {
   }
 
   node.choices.forEach(choice => {
-    if (!isChoiceAvailable(choice)) return;
-
     const button = document.createElement("button");
     button.textContent = choice.text;
     button.addEventListener("click", () => {
-      applyEffects(choice.effects);
-      const nextNode = storyData.find(n => n.id === choice.next);
-      if (nextNode) {
-        playerState.nodeId = nextNode.id;
-        displayNode(nextNode);
+      applyEffects(choice.effects); // <-- your player logic
+      renderStats();
+
+      // Try to show next node
+      if (currentNodes[choice.next]) {
+        displayNode(choice.next);
       } else {
         const fallbackFile = `events/${choice.next.replace(/\./g, "-")}.json`;
         fetch(fallbackFile)
-          .then(res => res.json())
-          .then(newData => {
-            storyData = newData;
-            const newStartNode = storyData.find(n => n.id === choice.next) || storyData[0];
-            playerState.nodeId = newStartNode.id;
-            displayNode(newStartNode);
+          .then(res => {
+            if (!res.ok) throw new Error("File not found");
+            return res.json();
           })
-          .catch(err => {
-            console.error("Failed to load file:", fallbackFile);
-            alert("Could not load next event.");
+          .then(newData => {
+            newData.forEach(n => {
+              currentNodes[n.id] = n; // ✅ Merge nodes into memory
+            });
+            if (currentNodes[choice.next]) {
+              displayNode(choice.next);
+            } else {
+              alert("Node not found even after loading file.");
+            }
+          })
+          .catch(() => {
+            alert("Failed to load file: " + fallbackFile);
           });
       }
     });
     choicesContainer.appendChild(button);
   });
-
-  renderStats();
-}
-
-function renderStats() {
-  const statsList = document.getElementById("stats-list");
-  statsList.innerHTML = "";
-
-  for (let stat in playerState.stats) {
-    const li = document.createElement("li");
-    li.textContent = `${stat}: ${playerState.stats[stat]}`;
-    statsList.appendChild(li);
-  }
 }

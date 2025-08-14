@@ -26,7 +26,7 @@ body {
 
 #story-box {
   background-image: url(images/parchment.png);
-  background-size: cover;
+  background-size: 100% 100%;
   border-radius: 12px;
   padding: 70px 60px;
   max-width: 600px;
@@ -55,6 +55,7 @@ body {
 
 #node-image {
   max-width: 100%;
+  width: 90%;
   border-radius: 8px;
   margin-bottom: 10px;
   border: 2px solid #a38a63;
