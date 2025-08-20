@@ -1,0 +1,304 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --ink: #e6e8ee;
+  --muted: #aeb4c0;
+  --line: #242836;
+  --accent: #7aa2ff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 16px;
+  background: var(--panel);
+  border-radius: 12px;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar input[type="file"] {
+  display: block;
+}
+
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nodelist {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.node {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: #0d1016;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 6px 0 2px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--ink);
+  background: #0c0f14;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.choices {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.choices-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.choice {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  background: #0b0e13;
+}
+
+.checked .sc-row,
+.out-row .row {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  gap: 8px;
+}
+
+.out-row textarea {
+  margin-top: 8px;
+}
+
+.app {
+  max-width: 850px;
+  /* narrower for easier reading */
+  margin: 24px auto;
+  padding: 16px;
+  background: var(--panel);
+  border-radius: 12px;
+}
+
+/* Node level */
+.node {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: #12151d;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  margin-bottom: 20px;
+  /* add spacing between nodes */
+
+}
+
+/* Choice level - indented & lighter */
+.choice {
+  margin-left: 20px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #181c25;
+}
+
+/* Outcome rows - even lighter */
+.out-row {
+  margin-left: 20px;
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+  background: #1d2029;
+  border-radius: 6px;
+}
+
+/* Section headers */
+.choices-header,
+.sc-header,
+.out-header {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+
+.choices-header h4,
+.sc-header h5,
+.out-header h5 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Inputs readability */
+input,
+textarea,
+select {
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* Buttons: distinguish secondary ones */
+button {
+  background: var(--accent);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+/* --- Layout shell: sidebar + main --- */
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Sidebar */
+.sidebar {
+  background: #0d1016;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-head .search {
+  width: 100%;
+}
+
+.node-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+}
+
+.node-item {
+  text-align: left;
+  background: #0b0e13;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.node-item:hover {
+  filter: brightness(1.05);
+}
+
+.node-item.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(122, 162, 255, 0.35) inset;
+}
+
+.node-item-id {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.node-item-title {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.node-item-meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+/* Main area */
+.mainpane {
+  min-height: 420px;
+}
+
+.empty-state {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  color: var(--muted);
+}
+
+.linklike {
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Optional: widen app a bit for two columns (you can tweak) */
+.app {
+  max-width: 1200px; /* was 1100px */
+}
