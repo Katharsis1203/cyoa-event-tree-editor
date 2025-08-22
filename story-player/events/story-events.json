@@ -1,0 +1,483 @@
+[
+  {
+    "id": "start",
+    "title": "At the Frozen Gate",
+    "text": "A crumbling gate looms out of the white. Wind scours your face. The wood is rimed with ice.",
+    "image": "images/ice_gate_filtered2.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Smash the gate open",
+        "statChecks": [
+          {
+            "stat": "strength",
+            "difficulty": 10
+          },
+          {
+            "stat": "endurance",
+            "difficulty": 8
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "You slam into the gate and bounce off; pain blossoms in your shoulder.",
+            "next": "gate_fail"
+          },
+          "1": {
+            "resultText": "The gate shifts with a groan, but the ice holds.",
+            "next": "gate_fail"
+          },
+          "2": {
+            "resultText": "With a final heave, the bar splinters and the gate yawns inward.",
+            "next": "inside_ruins"
+          }
+        }
+      },
+      {
+        "type": "simple",
+        "text": "Circle around the wall",
+        "next": "wall_path"
+      },
+      {
+        "type": "checked",
+        "text": "Climb over the wall",
+        "statChecks": [
+          {
+            "stat": "agility",
+            "difficulty": 9
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "Your fingers numb; you slip back to the snow.",
+            "next": "gate_fail"
+          },
+          "1": {
+            "resultText": "You find purchase and haul yourself over the top.",
+            "next": "inside_ruins"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "gate_fail",
+    "title": "Bruised Knuckles",
+    "text": "The gate defies you. Breath plumes; your arms tremble.",
+    "image": "images/bruised_fists.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Catch your breath and go around",
+        "next": "wall_path"
+      }
+    ]
+  },
+  {
+    "id": "wall_path",
+    "title": "Hidden Trail",
+    "text": "Beyond the wall, a narrow track threads north, half-buried by drifting snow.",
+    "image": "images/alternate_pathway.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Follow faint prints",
+        "statChecks": [
+          {
+            "stat": "perception",
+            "difficulty": 7
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "The trail blurs, swallowed by new snowfall.",
+            "next": "ambush"
+          },
+          "1": {
+            "resultText": "You keep to the firmer ground and skirt a shallow hollow.",
+            "next": "forest_clearing"
+          }
+        }
+      },
+      {
+        "type": "simple",
+        "text": "Push straight through the drifts",
+        "next": "ambush"
+      }
+    ]
+  },
+  {
+    "id": "ambush",
+    "title": "Snowblind Ambush",
+    "text": "Figures burst from the brush—ragged furs, crude blades. A trap.",
+    "image": "images/ambush.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Dive aside!",
+        "statChecks": [
+          {
+            "stat": "agility",
+            "difficulty": 9
+          },
+          {
+            "stat": "perception",
+            "difficulty": 8
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "A club catches your ribs. You go down hard.",
+            "next": "captured"
+          },
+          "1": {
+            "resultText": "You twist away, taking a glancing blow as you break free.",
+            "next": "escape_scratched"
+          },
+          "2": {
+            "resultText": "You read the lunge early and slip past cleanly.",
+            "next": "forest_clearing"
+          }
+        }
+      },
+      {
+        "type": "checked",
+        "text": "Roar and charge",
+        "statChecks": [
+          {
+            "stat": "strength",
+            "difficulty": 10
+          },
+          {
+            "stat": "courage",
+            "difficulty": 7
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "Your shout falters; they dogpile you.",
+            "next": "captured"
+          },
+          "1": {
+            "resultText": "You scatter the closest two, but more close in.",
+            "next": "escape_scratched"
+          },
+          "2": {
+            "resultText": "Your fury breaks their nerve; the path opens.",
+            "next": "forest_clearing"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "escape_scratched",
+    "title": "Blood on Snow",
+    "text": "You stagger free, cuts stinging in the cold.",
+    "image": "images/blood_snow.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Limp toward the clearing",
+        "next": "forest_clearing"
+      }
+    ]
+  },
+  {
+    "id": "captured",
+    "title": "Rope and Rough Hands",
+    "text": "They bind your wrists and drag you toward a smoking camp.",
+    "image": "images/captured.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Plead your case",
+        "statChecks": [
+          {
+            "stat": "charisma",
+            "difficulty": 9
+          },
+          {
+            "stat": "lore",
+            "difficulty": 7
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "Your words freeze in your mouth; they jeer.",
+            "next": "camp_cage"
+          },
+          "1": {
+            "resultText": "A few waver; the leader shakes his head.",
+            "next": "camp_cage"
+          },
+          "2": {
+            "resultText": "They untie you warily and shove you out into the dark.",
+            "next": "forest_clearing"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "camp_cage",
+    "title": "Crude Pen",
+    "text": "A lash of rawhide bites your wrist. The pen reeks of smoke and wet fur.",
+    "image": "images/cage.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Pick the knot and slip out",
+        "statChecks": [
+          {
+            "stat": "agility",
+            "difficulty": 9
+          },
+          {
+            "stat": "perception",
+            "difficulty": 6
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "The lash tightens; a guard turns.",
+            "next": "injured_escape"
+          },
+          "1": {
+            "resultText": "You wriggle free but jostle a post—someone stirs.",
+            "next": "escape_scratched"
+          },
+          "2": {
+            "resultText": "Quiet as breath, you ghost into the trees.",
+            "next": "forest_clearing"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "injured_escape",
+    "title": "Torn Wrist",
+    "text": "Blood trickles warm under the bindings. You run anyway.",
+    "image": "images/injury.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Keep going",
+        "next": "forest_clearing"
+      }
+    ]
+  },
+  {
+    "id": "forest_clearing",
+    "title": "Moonlit Clearing",
+    "text": "Frosted grass glows under a thin moon. A cave mouth yawns in a rocky shelf.",
+    "image": "images/clearing.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Enter the cave",
+        "next": "cave_entrance"
+      },
+      {
+        "type": "simple",
+        "text": "Head back toward the ruins",
+        "next": "inside_ruins"
+      },
+      {
+        "type": "simple",
+        "text": "Return to the hub",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "inside_ruins",
+    "title": "Hushed Halls",
+    "text": "Inside the ruins, glyphs coil across damp stone. Something listens.",
+    "image": "images/ruins_inner.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Study the markings",
+        "statChecks": [
+          {
+            "stat": "intelligence",
+            "difficulty": 10
+          },
+          {
+            "stat": "lore",
+            "difficulty": 9
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "The symbols writhe; your head throbs."
+          },
+          "1": {
+            "resultText": "Fragments resolve—warnings of a bound thing."
+          },
+          "2": {
+            "resultText": "Meaning locks into place; a path reveals itself.",
+            "next": "shrine_antechamber"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "cave_entrance",
+    "title": "The Fissure",
+    "text": "A narrow cleft breathes cold air from deep within.",
+    "image": "images/fissure.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Squeeze through the fissure",
+        "statChecks": [
+          {
+            "stat": "agility",
+            "difficulty": 9
+          },
+          {
+            "stat": "strength",
+            "difficulty": 7
+          }
+        ],
+        "outcomes": {
+          "0": {
+            "resultText": "You wedge fast; rock scrapes your ribs.",
+            "next": "blocked_passage"
+          },
+          "1": {
+            "resultText": "You scrape through, skin raw.",
+            "next": "inner_cave"
+          },
+          "2": {
+            "resultText": "You flow through the gap like smoke.",
+            "next": "inner_cave"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "blocked_passage",
+    "title": "Stuck",
+    "text": "The gap narrows to a cruel pinch. You back out, bruised.",
+    "image": "images/blocked.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Return to the clearing",
+        "next": "forest_clearing"
+      }
+    ]
+  },
+  {
+    "id": "inner_cave",
+    "title": "Bone-Cold Dark",
+    "text": "Pale crystals dust the floor. A low altar glimmers ahead.",
+    "image": "images/inner_cave.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Read the altar script",
+        "statChecks": [
+          {
+            "stat": "intelligence",
+            "difficulty": 9
+          },
+          {
+            "stat": "lore",
+            "difficulty": 9
+          }
+        ],
+        "outcomes": {
+          "0-1": {
+            "resultText": "Whispers slither away from sense. A chill lingers."
+          },
+          "2+": {
+            "resultText": "Words kindle in your mind; something answers.",
+            "next": "shrine_awakened"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "shrine_antechamber",
+    "title": "A Door of Runes",
+    "text": "The glyphs align in your thoughts, sketching out a path to a sealed door.",
+    "image": "images/door.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Unbind the seal",
+        "statChecks": [
+          {
+            "stat": "willpower",
+            "difficulty": 10
+          },
+          {
+            "stat": "lore",
+            "difficulty": 8
+          }
+        ],
+        "outcomes": {
+          "*": {
+            "resultText": "The runes flare and the door thunders open.",
+            "next": "shrine_awakened"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "shrine_awakened",
+    "title": "Something Old Stirs",
+    "text": "A slow pulse hums through stone and bone. You are seen.",
+    "image": "images/shrine.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Take the northern path",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "hub_return",
+    "title": "Back to the Fire",
+    "text": "You find your way back to familiar ground. The world waits.",
+    "image": "images/hub.png",
+    "background": "images/ice_gate_filtered.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "(Return to hub)",
+        "next": "HUB"
+      },
+      {
+        "type": "simple",
+        "text": "Try the ruins again",
+        "next": "start"
+      }
+    ]
+  }
+]

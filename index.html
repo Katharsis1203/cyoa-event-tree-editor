@@ -18,6 +18,7 @@
     <button id="export">Export JSON</button>
   </div>
 
+  <!-- Node Template -->
   <template id="node-template">
     <div class="node">
       <label>Node ID: <input type="text" class="node-id" /></label>
@@ -26,19 +27,83 @@
       <label title="Optional image to display during this event. Use a full URL or filename.">
         Image (optional): <input type="text" class="node-image" />
       </label>
+
       <div class="choices"></div>
       <button class="add-choice">Add Choice</button>
     </div>
   </template>
 
+  <!-- Choice Template -->
   <template id="choice-template">
     <div class="choice">
       <label>Choice Text: <input type="text" class="choice-text" /></label>
       <label title="The ID of the node this choice leads to (if not defined via child node)">
         Next Node ID: <input type="text" class="choice-next" />
       </label>
+
+      <!-- New: Stat Checks UI -->
+      <div class="statchecks">
+        <strong>Stat Checks (optional, bundle):</strong>
+        <div class="statcheck-list"></div>
+        <button class="add-statcheck" type="button">Add Stat Check</button>
+      </div>
+
+      <!-- New: Outcomes UI -->
+      <div class="outcomes">
+        <strong>Outcomes (by number of successes):</strong>
+        <div class="outcome-list"></div>
+        <small>Use keys like <code>0</code>, <code>1</code>, <code>2</code>, and optionally ranges like <code>2+</code> or <code>0-1</code>. The engine chooses the first matching key.</small><br/>
+        <button class="add-outcome" type="button">Add Outcome</button>
+      </div>
+
       <button class="add-child-node">Describe Node</button>
       <div class="child-container"></div>
+    </div>
+  </template>
+
+  <!-- New: Stat Check Row Template -->
+  <template id="statcheck-template">
+    <div class="statcheck">
+      <label>Stat: <input type="text" class="stat-name" placeholder="e.g. dexterity" /></label>
+      <label>Difficulty: <input type="number" class="stat-difficulty" min="0" step="1" placeholder="e.g. 6" /></label>
+      <button class="remove-statcheck" type="button">Remove</button>
+    </div>
+  </template>
+
+  <!-- New: Outcome Row Template -->
+  <template id="outcome-template">
+    <div class="outcome">
+      <label>Successes Key:
+        <input type="text" class="outcome-successes" placeholder="e.g. 0, 1, 2, 2+, 0-1, *" />
+      </label>
+      <label>Result Text:
+        <textarea class="outcome-result" placeholder="Shown inline in the same node after rolling"></textarea>
+      </label>
+      <label>Next Node (optional — auto-advance if set):
+        <input type="text" class="outcome-next" placeholder="e.g. start1.3" />
+      </label>
+      <label>Effects (optional JSON, e.g. { &quot;stats&quot;:{&quot;health&quot;:-3}, &quot;flags&quot;:{&quot;climbed&quot;:true} }):
+        <textarea class="outcome-effects" placeholder=''></textarea>
+      </label>
+
+      <!-- Optional: Outcome-specific choices if you want to stay in-node and present new options -->
+      <div class="outcome-choices">
+        <strong>Outcome Choices (optional if Next Node is set):</strong>
+        <div class="outcome-choice-list"></div>
+        <button class="add-outcome-choice" type="button">Add Outcome Choice</button>
+      </div>
+
+      <button class="remove-outcome" type="button">Remove Outcome</button>
+      <hr/>
+    </div>
+  </template>
+
+  <!-- New: Outcome Choice Row Template -->
+  <template id="outcome-choice-template">
+    <div class="outcome-choice">
+      <label>Text: <input type="text" class="outcome-choice-text" placeholder="e.g. Survey the forest" /></label>
+      <label>Next Node: <input type="text" class="outcome-choice-next" placeholder="e.g. forest-overview" /></label>
+      <button class="remove-outcome-choice" type="button">Remove</button>
     </div>
   </template>
 

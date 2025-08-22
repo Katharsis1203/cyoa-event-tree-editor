@@ -2,38 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elfquest</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CYOA Player</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div id="main-container">
+  <div class="stage">
+    <div class="center-stack" id="center-stack">
+      <main class="center">
+        <div id="story-box">
+          <input type="file" id="file-input" accept=".json"/>
+          <h1 id="node-title">At the Frozen Gate</h1>
 
-<div id="notification-box">
-  <!-- Notifications will be inserted here -->
-</div>
+          <!-- IMAGE first -->
+          <div id="node-image-container">
+            <img id="node-image" alt="Node Image"/>
+            <hr class="node-underline"/>
+          </div>
 
-    <section id="story-panel">
-      <div id="story-box">
-        <input type="file" id="file-input" accept=".json" />
-        <h1 id="node-title">Story Title</h1>
-        <p id="node-text">Story text will go here...</p>
+          <!-- Checks summary (transient) -->
+          <div id="checks-summary" class="checks" style="display:none"></div>
 
-        <div id="node-image-container">
-          <img id="node-image" src="" alt="Node Image" />
-          <hr class="node-underline" />
+          <!-- Flavour block (transient) -->
+          <div id="flavour-block" class="flavour" style="display:none"></div>
+
+          <!-- Standard node text -->
+          <p id="node-text">Your story text will appear here…</p>
+
+          <div id="choices-container"></div>
         </div>
+      </main>
 
-        <div id="choices-container"></div>
+      <!-- Side sheets -->
+      <button id="tab-left" class="pull-tab pull-left" title="Character"></button>
+      <button id="tab-right" class="pull-tab pull-right" title="Inventory"></button>
 
-        <div id="stats-panel">
-          <h2>Your Stats</h2>
-          <ul id="stats-list"></ul>
+      <aside id="undersheet-left" class="under under-left collapsed parchment">
+        <button class="close-btn" title="Hide">×</button>
+        <div class="under-inner">
+          <div class="portrait">
+            <img src="images/portrait.png" alt="Portrait"/>
+            <div class="who">
+              <div class="name">Highborn Exile</div>
+              <div class="meta">Northern Wastes</div>
+            </div>
+          </div>
+
+          <div class="meters">
+            <div class="meter"><label>Health</label><div class="bar"><i style="width:84%"></i></div></div>
+            <div class="meter"><label>Stamina</label><div class="bar warn"><i style="width:52%"></i></div></div>
+            <div class="meter"><label>Hunger</label><div class="bar bad"><i style="width:28%"></i></div></div>
+          </div>
+
+          <div class="status-tags">
+            <span class="pill">Cold</span>
+            <span class="pill">Cut Wrist</span>
+          </div>
         </div>
-      </div>
-    </section>
+      </aside>
+
+      <aside id="undersheet-right" class="under under-right collapsed parchment">
+        <button class="close-btn" title="Hide">×</button>
+        <div class="under-inner">
+          <div class="roll-head">
+            <div class="tabs">
+              <button class="tab active" data-tab="inv">Inventory</button>
+              <button class="tab" data-tab="journal">Journal</button>
+              <button class="tab" data-tab="char">Character</button>
+            </div>
+          </div>
+
+          <section id="tab-inv" class="tabpane" style="display:block">
+            <ul class="list">
+              <li><span>Half-Broken Sword</span><button class="ghost">Inspect</button></li>
+              <li><span>Jerky ×2</span><button class="ghost">Eat</button></li>
+              <li><span>Waterskin 3/5</span><button class="ghost">Drink</button></li>
+              <li><span>Twine</span><button class="ghost">Use</button></li>
+            </ul>
+          </section>
+
+          <section id="tab-journal" class="tabpane">
+            <p><strong>Quest:</strong> The Crumbling Gate</p>
+            <p>Find a way beyond the ruined wall. The patrols won’t stay away forever.</p>
+          </section>
+
+          <section id="tab-char" class="tabpane">
+            <ul class="kv">
+              <li><b>Strength</b><span>7</span></li>
+              <li><b>Endurance</b><span>6</span></li>
+              <li><b>Agility</b><span>7</span></li>
+              <li><b>Perception</b><span>6</span></li>
+            </ul>
+          </section>
+        </div>
+      </aside>
+    </div>
   </div>
 
+  <div id="notification-box"></div>
   <script type="module" src="script.js"></script>
 </body>
 </html>
