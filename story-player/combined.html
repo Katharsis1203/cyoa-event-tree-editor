@@ -85,14 +85,9 @@
         <div class="strip-fill" style="width:32%"></div>
       </div>
 
-      <section id="events-row">
-        <article class="event-slot" data-index="0"><div class="event-empty">Empty</div></article>
-        <article class="event-slot" data-index="1"><div class="event-empty">Empty</div></article>
-        <article class="event-slot" data-index="2"><div class="event-empty">Empty</div></article>
-      </section>
-
-      <section id="actions">
-        <button class="img-btn" data-source="hub" title="Explore Hub">
+      <div id="hub-layout">
+  <div class="button-column">
+    <button class="img-btn" data-source="hub" title="Explore Hub">
           <img src="images/btn-explore-hub.png" alt="Explore Hub"/>
           <span>Explore Hub</span>
         </button>
@@ -104,7 +99,15 @@
           <img src="images/btn-special.png" alt="Special Events"/>
           <span>Special Events</span>
         </button>
+  </div>
+  <div class="card-column">
+    <section id="events-row">
+        <article class="event-slot" data-index="0"><div class="event-empty">Empty</div></article>
+        <article class="event-slot" data-index="1"><div class="event-empty">Empty</div></article>
+        <article class="event-slot" data-index="2"><div class="event-empty">Empty</div></article>
       </section>
+  </div>
+</div>
 
       <section id="locations">
         <h3>Discovered Locations</h3>
@@ -126,17 +129,7 @@
     </main>
 
     <template id="event-template">
-      <div class="event-card">
-        <div class="event-img-wrap"><img src="" alt="" class="event-img"/></div>
-        <div class="event-info">
-          <h4 class="event-title"></h4>
-          <p class="event-snippet"></p>
-        </div>
-        <div class="event-actions">
-          <button class="enter-btn">Enter</button>
-          <button class="remove-btn" aria-label="Remove event">×</button>
-        </div>
-      </div>
+      <div class="event-card"></div>
     </template>
   </div>
 

@@ -185,3 +185,240 @@ body::after {
   #events-row { grid-template-columns: 1fr; }
   .loc-grid { grid-template-columns: repeat(3, 1fr); }
 }
+/* === Hub Card Overrides (Parchment Holders) === */
+
+.event-slot {
+  /* use parchment background instead of white */
+  background-image: url('images/parchment.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+
+  /* remove the old white box look */
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  /* kill the inner padding so card fills slot */
+  padding: 0 !important;
+
+  /* optional: set a fixed height if you want uniform slots */
+  min-height: 180px;
+}
+
+.event-slot .event-card {
+  width: 100% !important;
+  height: 100% !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: block !important;
+}
+
+
+/* === Hub Parchment Holder + Edge-Fade Overrides === */
+
+/* Kill the translucent white and switch to parchment */
+#events-row .event-slot {
+  background: none !important; /* removes rgba(255,255,255,.28) */
+  background-image: url('images/parchment.png') !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+
+  border: none !important;
+  border-radius: 10px !important; /* keep a soft parchment corner */
+  box-shadow: none !important;
+
+  /* Reveal parchment around the image */
+  padding: 10px !important;
+
+  /* Uniform size for empty/filled */
+  height: 220px !important;
+  min-height: 220px !important;
+
+  display: grid !important;
+  align-content: stretch !important;
+  overflow: hidden !important;
+}
+
+/* Card fills the holder minus the parchment padding */
+#events-row .event-slot .event-card {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+
+  /* Edge fade into parchment (mask trick) */
+  --fade: 14px;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Make empty state occupy identical space and show parchment only */
+#events-row .event-slot .event-empty {
+  height: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  opacity: .7 !important;
+}
+
+
+/* === Updated Edge-Fade Settings (deeper fade) === */
+#events-row .event-slot .event-card {
+  --fade: 40px; /* deeper fade into parchment */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Tighter gaps between cards */
+#hub-layout .card-column #events-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px !important; /* tighter spacing */
+}
+
+/* === Two-column Hub Layout (buttons left stacked, cards horizontal on right) — reset === */
+#hub-layout {
+  width: min(1200px, 95vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr; /* left natural width, right fills */
+  gap: 20px;
+  align-items: start;
+}
+
+#hub-layout .button-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep three cards horizontal; only tighten spacing */
+#hub-layout .card-column #events-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px; /* tighter spacing */
+  width: 100%;
+  margin: 0;
+}
+
+/* === Button sizing to match card row height with two buttons === */
+:root {
+  --card-row-height: 220px; /* matches .event-slot height */
+  --button-gap: 12px;       /* gap between stacked buttons in .button-column */
+}
+
+#hub-layout .button-column {
+  display: flex;
+  flex-direction: column;
+}
+
+#hub-layout .button-column .img-btn {
+  width: 100%;
+  height: calc((var(--card-row-height) - var(--button-gap)) / 2);
+  display: grid;
+  grid-template-rows: auto auto;
+  place-items: center;
+}
+/* === Make action buttons use the same parchment texture as cards === */
+#hub-layout .button-column .img-btn {
+  width: 240px;
+  background: none !important;
+  background-image: url('images/parchment.png') !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  color: #2b2b2b !important; /* dark text for contrast on parchment */
+  text-shadow: none !important;
+  cursor: pointer;
+}
+
+/* === Align top of buttons with top of cards === */
+#hub-layout {
+  align-items: start !important; /* grid rows start at same vertical line */
+}
+
+#hub-layout .button-column {
+  margin-top: 10px;
+  padding-top: 0 !important;
+}
+
+/* === Make action buttons use the same parchment texture as cards === */
+#hub-layout .button-column .img-btn {
+  background: none !important;
+  background-image: url('images/parchment.png') !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  color: #2b2b2b !important; /* dark text for contrast on parchment */
+  text-shadow: none !important;
+  cursor: pointer;
+}
+
+/* === Button images fill parchment bar and fade at edges (like cards) === */
+#hub-layout .button-column .img-btn {
+  position: relative !important;
+  overflow: hidden !important;
+  padding: 10px !important; /* reveal parchment border around the image */
+  background-image: url('images/parchment.png') !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  border-radius: 10px !important;
+}
+
+/* Hide button label text for clean image tiles */
+#hub-layout .button-column .img-btn span { display: none !important; }
+
+/* Make the inner <img> behave like a background with edge fade */
+#hub-layout .button-column .img-btn img {
+  position: absolute !important;
+  left: 10px; right: 10px; top: 10px; bottom: 10px; /* match padding above */
+  width: calc(100% - 20px) !important;
+  height: calc(100% - 20px) !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  display: block !important;
+
+  /* Edge fade into parchment (same mask approach as cards) */
+  --fade: 40px;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  mask-composite: intersect;
+}

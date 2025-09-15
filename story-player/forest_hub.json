@@ -13,8 +13,7 @@
       "requirements": [],
       "opens": {
         "nodeFile": "events/ice_gate.json",
-        "nodeId": "start",
-        "image": "images/cards/ice_gate.png"
+        "nodeId": "start"
       }
     },
     {
@@ -24,8 +23,7 @@
       "requirements": [],
       "opens": {
         "nodeFile": "events/wolf_trail.json",
-        "nodeId": "start",
-        "image": "images/cards/wolf_trail.png"
+        "nodeId": "start"
       }
     },
     {
@@ -35,8 +33,7 @@
       "requirements": [],
       "opens": {
         "nodeFile": "events/merchant_wagon.json",
-        "nodeId": "start",
-        "image": "images/cards/wagon.png"
+        "nodeId": "start"
       }
     },
     {
@@ -46,10 +43,9 @@
       "requirements": [],
       "opens": {
         "nodeFile": "events/abandoned_shrine.json",
-        "nodeId": "start",
-        "image": "images/cards/wayshrine.png"
+        "nodeId": "start"
       }
     }
   ],
-  "background": "images/hubs/ice.jpg"
+  "background": "images/ice_gate.png"
 }
