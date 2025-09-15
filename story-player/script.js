@@ -1,11 +1,15 @@
-// Existing imports/helpers from your player remain as-is
+// script.js — node passage renderer (SPA-safe)
+// Imports
 import { applyEffects, playerState, getPlayerState } from './player.js';
 import { isChoiceAvailable } from './logic.js';
 
-let currentNodes = {};
-let currentNodeId = null;
-let injectedFlavour = null;      // transient flavour text passed into next render
-let injectedChecks  = null;      // transient array of { stat, pass } for next render
+// Globals (share with glue)
+window.currentNodes = window.currentNodes || {};
+window.currentNodeId = window.currentNodeId || null;
+
+let injectedFlavour = null;   // transient flavour shown on next render
+let injectedChecks  = null;   // transient [{stat, pass}] shown on next render
+let prevBackgroundSrc = "";   // cache to avoid needless bg swaps
 
 const $ = (id) => document.getElementById(id);
 
@@ -16,7 +20,7 @@ function resolveSrc(src) {
   return `images/${src}`;
 }
 
-/* ---------- CHECK / OUTCOME HELPERS ---------- */
+/* ---------- CHECK / ROLL HELPERS ---------- */
 function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
 function statPassPct(player, req) {
@@ -33,114 +37,60 @@ function rollSuccess(player, req) {
   return Math.random() < clamp01(player / req);
 }
 
-/* Outcome-key parsing */
-function parseKey(key){
-  if (key === "*") return { type:"any" };
-  if (/^\d+$/.test(key)) return { type:"eq", a: Number(key) };
-  const m1 = key.match(/^(\d+)\+$/);
-  if (m1) return { type:"ge", a: Number(m1[1]) };
-  const m2 = key.match(/^(\d+)-(\d+)$/);
-  if (m2) return { type:"range", a:Number(m2[1]), b:Number(m2[2]) };
-  return { type:"unknown" };
-}
-function lowerBoundForKey(k){
-  const p = parseKey(k);
-  if (p.type === "eq") return p.a;
-  if (p.type === "ge") return p.a;
-  if (p.type === "range") return p.a;
-  if (p.type === "any") return -1; // wildcard has no lower bound
-  return -1;
-}
-function predicateForKey(k){
-  const p = parseKey(k);
-  if (p.type === "eq")    return (s)=> s === p.a;
-  if (p.type === "ge")    return (s)=> s >= p.a;
-  if (p.type === "range") return (s)=> s >= p.a && s <= p.b;
-  if (p.type === "any")   return (_)=> true;
-  return (_)=> false;
-}
+/* ---------- WEIGHTED BUCKET RESOLUTION ---------- */
+function pickWeightedBucket(statChecks, weighted, passMap) {
+  if (!weighted || !Array.isArray(weighted.buckets) || weighted.buckets.length === 0) return null;
 
-/* Probability distribution over number of successes for independent checks */
-function distributionFor(statChecks){
-  // dp[i][s] = prob after i checks having exactly s successes
-  const n = statChecks.length;
-  const dp = Array.from({length:n+1}, () => Array(n+1).fill(0));
-  dp[0][0] = 1;
-  for (let i=1;i<=n;i++){
-    const sc = statChecks[i-1];
-    const p  = statPassProb(getPlayerState(sc.stat) ?? 0, sc.difficulty);
-    for (let s=0; s<=i; s++){
-      // fail path
-      dp[i][s] += dp[i-1][s] * (1-p);
-      // success path
-      if (s>0) dp[i][s] += dp[i-1][s-1] * p;
+  // 1) Tally scores
+  const scores = {};
+  for (const b of weighted.buckets) scores[b.id] = 0;
+
+  for (const sc of (statChecks || [])) {
+    const stat = sc.stat;
+    if (!stat) continue;
+    if (!passMap[stat]) continue; // only passed stats add weight
+    const row = (weighted.weights && weighted.weights[stat]) || {};
+    for (const [bucketId, w] of Object.entries(row)) {
+      if (scores[bucketId] == null) continue;
+      const n = Number(w);
+      if (!Number.isFinite(n)) continue;
+      scores[bucketId] += n;
     }
   }
-  return dp[n]; // array length n+1, sum ~1
-}
 
-/* Pick best band from outcomes (highest lower bound) and compute its probability */
-function overallChance(statChecks, outcomesObj){
-  if (!outcomesObj || Object.keys(outcomesObj).length === 0) return 0;
-
-  const keys = Object.keys(outcomesObj);
-  // choose the band with max lower bound (i.e., the "best" outcome band)
-  let bestKey = keys[0];
-  let bestLB  = lowerBoundForKey(bestKey);
-  for (const k of keys){
-    const lb = lowerBoundForKey(k);
-    if (lb > bestLB) { bestLB = lb; bestKey = k; }
+  // 2) Eligible + all
+  const eligible = [];
+  const all = [];
+  for (const b of weighted.buckets) {
+    const score = scores[b.id] || 0;
+    const threshold = Number(b.threshold) || 0;
+    const entry = { bucket: b, score };
+    all.push(entry);
+    if (score >= threshold) eligible.push(entry);
   }
-  const pred = predicateForKey(bestKey);
-  const dist = distributionFor(statChecks);
-  let prob = 0;
-  for (let s=0; s<dist.length; s++){
-    if (pred(s)) prob += dist[s];
+
+  // choose among entries by score; "first"/"highest" keeps author order on ties
+  function chooseBest(arr) {
+    if (arr.length === 0) return null;
+    const mode = weighted.tiebreak || "first";
+    if (mode === "random") {
+      const maxScore = Math.max(...arr.map(e => e.score));
+      const tied = arr.filter(e => e.score === maxScore);
+      return tied[Math.floor(Math.random() * tied.length)];
+    } else {
+      let best = arr[0];
+      for (let i = 1; i < arr.length; i++) {
+        if (arr[i].score > best.score) best = arr[i];
+      }
+      return best;
+    }
   }
-  return Math.round(prob * 100);
+
+  const winner = chooseBest(eligible) || chooseBest(all);
+  return winner ? winner.bucket : null;
 }
 
-/* Choose the actual outcome band for a realized number of successes */
-function pickOutcome(outcomesObj, successes) {
-  if (!outcomesObj) return null;
-  const keys = Object.keys(outcomesObj);
-
-  // exact
-  const exact = keys.find(k => /^\d+$/.test(k) && Number(k) === successes);
-  if (exact) return [exact, outcomesObj[exact]];
-
-  // range a-b
-  const rangeKey = keys.find(k => {
-    const m = k.match(/^(\d+)-(\d+)$/);
-    if (!m) return false;
-    const a = Number(m[1]), b = Number(m[2]);
-    return successes >= a && successes <= b;
-  });
-  if (rangeKey) return [rangeKey, outcomesObj[rangeKey]];
-
-  // plus n+
-  const plusKey = keys.find(k => /^(\d+)\+$/.test(k) && successes >= Number(k.replace('+','')));
-  if (plusKey) return [plusKey, outcomesObj[plusKey]];
-
-  // wildcard
-  if (outcomesObj["*"]) return ["*", outcomesObj["*"]];
-
-  return null;
-}
-
-/* ---------- RENDER STATS ---------- */
-function renderStats() {
-  const ul = $("stats-list");
-  if (!ul) return;
-  ul.innerHTML = "";
-  for (const [k, v] of Object.entries(playerState.stats || {})) {
-    const li = document.createElement('li');
-    li.textContent = `${k}: ${v}`;
-    ul.appendChild(li);
-  }
-}
-
-/* ---------- CHECKS SUMMARY RENDERER (transient, post-click) ---------- */
+/* ---------- CHECKS SUMMARY RENDERER (transient) ---------- */
 function prettyStatName(key) {
   if (!key) return "";
   return key.charAt(0).toUpperCase() + key.slice(1);
@@ -155,52 +105,88 @@ function renderChecksSummary() {
     return;
   }
 
-  const items = injectedChecks.map(rc => {
-    const resultClass = rc.pass ? "pass" : "fail";
-    const resultText  = rc.pass ? "Success" : "Fail";
-    return `
-      <li>
-        <span class="stat">${prettyStatName(rc.stat)}</span>
-        <span class="result ${resultClass}">${resultText}</span>
-      </li>`;
-  }).join("");
+  const frag = document.createDocumentFragment();
+  const title = document.createElement('div');
+  title.className = 'title';
+  title.textContent = 'Checks';
+  frag.appendChild(title);
 
-  el.innerHTML = `
-    <div class="title">Checks</div>
-    <ul>${items}</ul>
-  `;
+  const ul = document.createElement('ul');
+  injectedChecks.forEach(rc => {
+    const li = document.createElement('li');
+    const stat = document.createElement('span');
+    stat.className = 'stat';
+    stat.textContent = prettyStatName(rc.stat);
+
+    const result = document.createElement('span');
+    result.className = 'result ' + (rc.pass ? 'pass' : 'fail');
+    result.textContent = rc.pass ? 'Success' : 'Fail';
+
+    li.appendChild(stat);
+    li.appendChild(result);
+    ul.appendChild(li);
+  });
+  frag.appendChild(ul);
+
+  el.innerHTML = "";
+  el.appendChild(frag);
   el.style.display = "block";
 }
 
+/* ---------- HOVER REVEAL (bind once) ---------- */
+const initHoverReveal = (() => {
+  let initialized = false;
+  return (container) => {
+    if (initialized || !container) return;
+    initialized = true;
+    container.addEventListener('mouseover', (e) => {
+      const btn = e.target.closest('.choice-scroll');
+      if (btn && container.contains(btn)) btn.classList.add('reveal');
+    });
+    container.addEventListener('mouseout', (e) => {
+      const btn = e.target.closest('.choice-scroll');
+      if (btn && container.contains(btn)) btn.classList.remove('reveal');
+    });
+  };
+})();
+
 /* ---------- CORE RENDERING ---------- */
-function displayNode(id) {
-  const node = currentNodes[id];
+window.displayNode = function displayNode(id) {
+  if (!id) return;
+  const node = window.currentNodes[id];
   if (!node) {
-    alert("Node not found: " + id);
+    console.warn("Node not found:", id, window.currentNodes);
     return;
   }
-  currentNodeId = id;
+  window.currentNodeId = id;
 
   $("node-title").textContent = node.title ?? "";
 
-  // Foreground image (image comes before transients + text)
+  // Foreground image
   const imageEl = $("node-image");
   const imageContainer = $("node-image-container");
   if (node.image) {
-    imageEl.src = resolveSrc(node.image);
+    imageEl.setAttribute('decoding', 'async');
+    imageEl.setAttribute('loading', 'eager');
+    const src = resolveSrc(node.image);
+    if (imageEl.src !== src) imageEl.src = src;
     imageContainer.style.display = "block";
   } else {
     imageContainer.style.display = "none";
   }
 
-  // Background
-  if (node.background) {
-    document.body.style.backgroundImage = `url('${resolveSrc(node.background)}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundRepeat = 'no-repeat';
-  } else {
-    document.body.style.backgroundImage = '';
+  // Background (only change if different)
+  const bgSrc = node.background ? resolveSrc(node.background) : "";
+  if (bgSrc !== prevBackgroundSrc) {
+    prevBackgroundSrc = bgSrc;
+    if (bgSrc) {
+      document.body.style.backgroundImage = `url('${bgSrc}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+    } else {
+      document.body.style.backgroundImage = '';
+    }
   }
 
   // Inject checks summary (if any) BEFORE flavour + body
@@ -224,16 +210,16 @@ function displayNode(id) {
     const endMessage = document.createElement("p");
     endMessage.textContent = "The end.";
     choicesContainer.appendChild(endMessage);
-    // Clear transients after rendering once
     injectedFlavour = null;
     injectedChecks  = null;
     return;
   }
 
+  const frag = document.createDocumentFragment();
+
   node.choices.forEach(choice => {
     if (!isChoiceAvailable(choice)) return;
 
-    // === scroll-style button ===
     const scroll = document.createElement("button");
     scroll.type = "button";
     scroll.className = "choice-scroll";
@@ -247,21 +233,11 @@ function displayNode(id) {
     textEl.textContent = choice.text ?? "(choice)";
     head.appendChild(textEl);
 
-    // For checked choices: show an Overall % pill and a hover-reveal with per-stat odds
     if (choice.type === "checked" && Array.isArray(choice.statChecks) && choice.statChecks.length > 0) {
-      // Overall % computed from outcome bands (best band by highest lower bound)
-      const overall = overallChance(choice.statChecks, choice.outcomes || {});
-      const pill = document.createElement("div");
-      pill.className = "overall-pill";
-      pill.textContent = `Overall ${overall}%`;
-      head.appendChild(pill);
-
-      // Optional meta hint
       const meta = document.createElement("div");
       meta.className = "choice-meta";
       meta.textContent = "Hover to view individual checks";
 
-      // Hover-reveal: per-stat percent chips
       const reveal = document.createElement("div");
       reveal.className = "checks-reveal";
 
@@ -282,11 +258,9 @@ function displayNode(id) {
       scroll.appendChild(meta);
       scroll.appendChild(reveal);
     } else {
-      // Simple choice: just the head (text aligned)
       scroll.appendChild(head);
     }
 
-    // CLICK HANDLER
     scroll.addEventListener("click", () => {
       // Apply pre-choice effects (if any)
       if (choice.effects) {
@@ -307,38 +281,45 @@ function displayNode(id) {
 
       if (choice.type === "checked") {
         const statChecks = choice.statChecks || [];
+        const weighted   = choice.weighted;
 
-        // Roll each check and record pass/fail for the transient summary
+        if (!weighted || !weighted.buckets || weighted.buckets.length === 0) {
+          alert("This checked choice has no outcome buckets.");
+          return;
+        }
+
+        // 1) Roll each check; record for transient summary
         const rollResults = statChecks.map(sc => {
           const player = getPlayerState(sc.stat) ?? 0;
           const pass   = rollSuccess(player, sc.difficulty);
           return { stat: sc.stat, pass };
         });
 
-        const successes = rollResults.filter(r => r.pass).length;
+        // 2) Build pass map for tallies
+        const passMap = Object.fromEntries(rollResults.map(r => [r.stat, r.pass]));
 
-        const picked = pickOutcome(choice.outcomes || {}, successes);
-        if (!picked) {
-          alert("No matching outcome for successes = " + successes);
+        // 3) Resolve weighted winner
+        const winner = pickWeightedBucket(statChecks, weighted, passMap);
+        if (!winner) {
+          alert("No outcome bucket was selected.");
           return;
         }
-        const [, outcome] = picked;
 
-        // Apply outcome effects first (if any)
-        if (outcome.effects) {
-          applyEffects(outcome.effects);
+        // 4) Apply outcome effects first (if any)
+        if (winner.effects) {
+          applyEffects(winner.effects);
           renderStats();
         }
 
-        // Transients for the NEXT render
-        injectedChecks  = rollResults;                              // show only stat + success/fail
-        injectedFlavour = (outcome.resultText || "").trim() || null;
+        // 5) Set transients for the NEXT render
+        injectedChecks  = rollResults;
+        injectedFlavour = (winner.flavourText || "").trim() || null;
 
-        // Navigate (or re-render same node) AFTER setting transients
-        if (outcome.next) {
-          goToNext(outcome.next);
+        // 6) Navigate (or re-render same node)
+        if (winner.next) {
+          goToNext(winner.next);
         } else {
-          displayNode(currentNodeId);
+          window.displayNode(window.currentNodeId);
         }
         return;
       }
@@ -353,30 +334,33 @@ function displayNode(id) {
       }
     });
 
-    choicesContainer.appendChild(scroll);
+    frag.appendChild(scroll);
   });
 
-  // --- event delegation for lightweight hover reveal (no costly reflow) ---
-  choicesContainer.onmouseover = (e) => {
-    const btn = e.target.closest('.choice-scroll');
-    if (btn && choicesContainer.contains(btn)) btn.classList.add('reveal');
-  };
-  choicesContainer.onmouseout = (e) => {
-    const btn = e.target.closest('.choice-scroll');
-    if (btn && choicesContainer.contains(btn)) btn.classList.remove('reveal');
-  };
+  choicesContainer.appendChild(frag);
+  initHoverReveal(choicesContainer);
 
-  // Clear transients AFTER one render so they don't persist across navigation
+  // Clear transients AFTER one render
   injectedFlavour = null;
   injectedChecks  = null;
-}
+};
 
+/* ---------- NAVIGATION ---------- */
 function goToNext(nextId) {
   if (!nextId) return;
-  if (currentNodes[nextId]) {
-    displayNode(nextId);
+
+  if (nextId === 'HUB' && typeof window.showHub === 'function') {
+    // Return to hub view in SPA
+    window.showHub();
     return;
   }
+
+  if (window.currentNodes[nextId]) {
+    window.displayNode(nextId);
+    return;
+  }
+
+  // Fallback: try to load another file based on id
   const fallbackFile = `events/${String(nextId).replace(/\./g, "-")}.json`;
   fetch(fallbackFile)
     .then(res => {
@@ -384,9 +368,9 @@ function goToNext(nextId) {
       return res.json();
     })
     .then(newData => {
-      newData.forEach(n => { currentNodes[n.id] = n; });
-      if (currentNodes[nextId]) {
-        displayNode(nextId);
+      newData.forEach(n => { window.currentNodes[n.id] = n; });
+      if (window.currentNodes[nextId]) {
+        window.displayNode(nextId);
       } else {
         alert("Node not found even after loading file.");
       }
@@ -394,41 +378,40 @@ function goToNext(nextId) {
     .catch(() => alert("Failed to load file: " + fallbackFile));
 }
 
-/* ---------- FILE PICKER BOOT ---------- */
-$("file-input").addEventListener("change", function (event) {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      currentNodes = {};
-      data.forEach(node => { currentNodes[node.id] = node; });
-      currentNodeId = data[0]?.id ?? null;
-      if (!currentNodeId) throw new Error("No nodes in file");
-      displayNode(currentNodeId);
-      renderStats();
-    } catch (err) {
-      alert("Failed to parse JSON file.");
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-});
+/* ---------- FILE PICKER (manual testing) ---------- */
+const fileInput = $("file-input");
+if (fileInput) {
+  fileInput.addEventListener("change", function (event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        window.currentNodes = {};
+        data.forEach(node => { window.currentNodes[node.id] = node; });
+        window.currentNodeId = data[0]?.id ?? null;
+        if (!window.currentNodeId) throw new Error("No nodes in file");
+        window.displayNode(window.currentNodeId);
+        renderStats();
+      } catch (err) {
+        alert("Failed to parse JSON file.");
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
 
-/* ---------- UI: undersheets from under the main parchment ---------- */
+/* ---------- RIGHT SHEET TABS & UNDER SHEETS ---------- */
 const leftSheet  = document.getElementById("undersheet-left");
 const rightSheet = document.getElementById("undersheet-right");
 
 const leftTab  = document.getElementById("tab-left")  || document.querySelector(".pull-left");
 const rightTab = document.getElementById("tab-right") || document.querySelector(".pull-right");
 
-leftTab?.addEventListener("click", () => {
-  leftSheet?.classList.toggle("open");
-});
-rightTab?.addEventListener("click", () => {
-  rightSheet?.classList.toggle("open");
-});
+leftTab?.addEventListener("click", () => { leftSheet?.classList.toggle("open"); });
+rightTab?.addEventListener("click", () => { rightSheet?.classList.toggle("open"); });
 
 document.querySelectorAll(".under .close-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
@@ -437,7 +420,6 @@ document.querySelectorAll(".under .close-btn").forEach(btn => {
   });
 });
 
-/* Tabs inside right sheet */
 document.querySelectorAll(".tab").forEach(btn => {
   btn.addEventListener("click", () => {
     const name = btn.dataset.tab;
@@ -448,3 +430,18 @@ document.querySelectorAll(".tab").forEach(btn => {
     if (pane) pane.style.display = "block";
   });
 });
+
+/* ---------- STATS RENDERER (if you show a live stat list elsewhere) ---------- */
+function renderStats() {
+  const ul = $("stats-list");
+  if (!ul) return;
+  ul.innerHTML = "";
+  for (const [k, v] of Object.entries(playerState.stats || {})) {
+    const li = document.createElement('li');
+    li.textContent = `${k}: ${v}`;
+    ul.appendChild(li);
+  }
+}
+
+// No default init here on purpose (SPA-safe).
+// Standalone index.html could call window.displayNode('start') explicitly.

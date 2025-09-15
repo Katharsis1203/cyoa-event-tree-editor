@@ -1,7 +1,7 @@
 export let playerState = {
     nodeId: null,
     fileName: null,
-    stats: { strength: 5, dexterity: 3, health: 100, endurance: 5 },
+    stats: { strength: 5, dexterity: 5, intelligence: 8, agility: 10, wisdom: 10, health: 100, perception: 5, endurance: 5 },
     inventory: [],
     flags: {}
 };

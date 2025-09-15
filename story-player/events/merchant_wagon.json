@@ -1,0 +1,118 @@
+[
+  {
+    "id": "start",
+    "title": "Snow-Stuck Wagon",
+    "text": "A lone wagon lists in a drift. A figure waves you closer, muffled against the cold.",
+    "image": "images/wagon.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Help push the wagon free",
+        "next": "push"
+      },
+      {
+        "type": "simple",
+        "text": "Keep your distance",
+        "next": "watch"
+      }
+    ]
+  },
+  {
+    "id": "push",
+    "title": "Heave-ho",
+    "text": "You dig in your heels. Wood creaks; ice groans.",
+    "image": "images/push.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Push harder",
+        "statChecks": [
+          {
+            "stat": "strength",
+            "difficulty": 8
+          },
+          {
+            "stat": "endurance",
+            "difficulty": 7
+          }
+        ],
+        "weighted": {
+          "buckets": [
+            {
+              "id": "success",
+              "threshold": 2,
+              "flavourText": "The wheels bite and the wagon lurches free.",
+              "next": "thanks"
+            },
+            {
+              "id": "partial",
+              "threshold": 1,
+              "flavourText": "It inches forward; the driver nods grimly.",
+              "next": "thanks"
+            },
+            {
+              "id": "fail",
+              "threshold": 0,
+              "flavourText": "Your muscles scream; it barely budges.",
+              "next": "watch"
+            }
+          ],
+          "weights": {
+            "strength": {
+              "success": 1,
+              "partial": 1
+            },
+            "endurance": {
+              "success": 1
+            }
+          },
+          "tiebreak": "first"
+        }
+      }
+    ]
+  },
+  {
+    "id": "watch",
+    "title": "Suspicion",
+    "text": "You scan the snowfields. No ambushers\u2014but the cold bites deeper.",
+    "image": "images/watch.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Move on",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "thanks",
+    "title": "A Quiet Trade",
+    "text": "The driver presses a small wrapped bundle into your hands.",
+    "image": "images/trade.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Accept and return to the hub",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "hub_return",
+    "title": "Tracks to Camp",
+    "text": "Your breath fogs as you make for the familiar fires.",
+    "image": "images/hub.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "(Return to hub)",
+        "next": "HUB"
+      }
+    ]
+  }
+]

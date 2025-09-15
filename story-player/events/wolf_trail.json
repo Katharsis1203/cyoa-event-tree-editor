@@ -1,0 +1,90 @@
+[
+  {
+    "id": "start",
+    "title": "Wolf Trail",
+    "text": "Fresh pawprints dot the snow, circling a broken fence post.",
+    "image": "images/wolf_trail.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Follow the tracks into the trees",
+        "next": "into_trees"
+      },
+      {
+        "type": "simple",
+        "text": "Back away slowly",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "into_trees",
+    "title": "White Shadows",
+    "text": "The pines swallow sound. A low growl shivers the air.",
+    "image": "images/wolves.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Stand your ground",
+        "statChecks": [
+          {
+            "stat": "courage",
+            "difficulty": 8
+          },
+          {
+            "stat": "strength",
+            "difficulty": 7
+          }
+        ],
+        "weighted": {
+          "buckets": [
+            {
+              "id": "success",
+              "threshold": 2,
+              "flavourText": "Your shout sends them scattering.",
+              "next": "hub_return"
+            },
+            {
+              "id": "partial",
+              "threshold": 1,
+              "flavourText": "They waver, then slink off. You bleed a little.",
+              "next": "hub_return"
+            },
+            {
+              "id": "fail",
+              "threshold": 0,
+              "flavourText": "They surge\u2014and you barely escape.",
+              "next": "hub_return"
+            }
+          ],
+          "weights": {
+            "courage": {
+              "success": 1,
+              "partial": 1
+            },
+            "strength": {
+              "success": 1
+            }
+          },
+          "tiebreak": "first"
+        }
+      }
+    ]
+  },
+  {
+    "id": "hub_return",
+    "title": "Tracks Fading",
+    "text": "You find your bearings and return to safer ground.",
+    "image": "images/hub.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "(Return to hub)",
+        "next": "HUB"
+      }
+    ]
+  }
+]

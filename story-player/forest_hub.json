@@ -1,0 +1,55 @@
+{
+  "hubName": "ice_hub",
+  "ambient": [
+    "The wind combs the ridge with a low moan.",
+    "Frost breath hangs in the air like ghosts.",
+    "Somewhere, a shutter claps once, then stills."
+  ],
+  "cards": [
+    {
+      "id": "ice_gate_entry",
+      "weight": 2,
+      "category": "life",
+      "requirements": [],
+      "opens": {
+        "nodeFile": "events/ice_gate.json",
+        "nodeId": "start",
+        "image": "images/cards/ice_gate.png"
+      }
+    },
+    {
+      "id": "wolf_trail_spoor",
+      "weight": 1,
+      "category": "life",
+      "requirements": [],
+      "opens": {
+        "nodeFile": "events/wolf_trail.json",
+        "nodeId": "start",
+        "image": "images/cards/wolf_trail.png"
+      }
+    },
+    {
+      "id": "waylaid_wagon",
+      "weight": 1,
+      "category": "life",
+      "requirements": [],
+      "opens": {
+        "nodeFile": "events/merchant_wagon.json",
+        "nodeId": "start",
+        "image": "images/cards/wagon.png"
+      }
+    },
+    {
+      "id": "wayshrine_whisper",
+      "weight": 1,
+      "category": "special",
+      "requirements": [],
+      "opens": {
+        "nodeFile": "events/abandoned_shrine.json",
+        "nodeId": "start",
+        "image": "images/cards/wayshrine.png"
+      }
+    }
+  ],
+  "background": "images/hubs/ice.jpg"
+}

@@ -1,38 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hub</title>
-    <link rel="stylesheet" href="hub.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hub (JSON-driven)</title>
+  <link rel="stylesheet" href="hub.css"/>
 </head>
-
 <body>
-    <main>
-        <section id="event-handler">
-            <h1 id="event-display-title">Events</h1>
-            <div id="event-container">
-                <div class="event-box"></div>
-                <div class="event-box"></div>
-                <div class="event-box"></div>
-            </div>
-            <div id="action-container">
-                <button class="action-btn" id="explore-btn">Explore</button>
-                <button class="action-btn" id="self-btn">Self</button>
-            </div>
-        </section>
-    </main>
-</body>
 
-<template id="event-template">
-    <div class="event-card">
-        <h1 class="event-card-title"></h1>
-        <img class="event-card-image" width="150px">
-        <button class="delete-event-btn">Delete</button>
+  <!-- Top Pull-Down Tabs -->
+  <header id="tabbar">
+    <button class="tab" data-panel="character">Character</button>
+    <button class="tab" data-panel="inventory">Inventory</button>
+    <button class="tab" data-panel="quests">Quests</button>
+    <button class="tab" data-panel="status">Status</button>
+  </header>
+
+  <!-- Panels that slide down from tabs -->
+  <section id="panels">
+    <div id="panel-character" class="panel">
+      <div class="panel-inner">
+        <h2>Character</h2>
+        <div class="panel-grid">
+          <div class="portrait placeholder">Portrait</div>
+          <div class="stats">
+            <p><strong>Name:</strong> High Elven Princess</p>
+            <p><strong>Level:</strong> 5</p>
+            <p><strong>Traits:</strong> Exiled, Noble Bearing</p>
+            <p><strong>Status Effects:</strong> None</p>
+          </div>
+        </div>
+      </div>
     </div>
-</template>
 
-<script type="module" src="hub.js"></script>
+    <div id="panel-inventory" class="panel">
+      <div class="panel-inner">
+        <h2>Inventory</h2>
+        <div class="inventory-grid">
+          <div class="slot">1</div><div class="slot">2</div><div class="slot">3</div><div class="slot">4</div>
+          <div class="slot">5</div><div class="slot">6</div><div class="slot">7</div><div class="slot">8</div>
+          <div class="slot">9</div><div class="slot">10</div><div class="slot">11</div><div class="slot">12</div>
+        </div>
+      </div>
+    </div>
 
+    <div id="panel-quests" class="panel">
+      <div class="panel-inner">
+        <h2>Quests</h2>
+        <ul class="quests">
+          <li><strong>Echoes of the Frostwall</strong> — Investigate the sealed gate.</li>
+          <li><strong>Whispers in the Pines</strong> — Track the missing scout.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="panel-status" class="panel">
+      <div class="panel-inner">
+        <h2>Status</h2>
+        <div class="panel-grid">
+          <div>
+            <p><strong>Health:</strong> 78/100</p>
+            <p><strong>Stamina:</strong> 52/100</p>
+            <p><strong>Familiarity (This Hub):</strong> <span id="fam-val">32%</span></p>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar">
+              <div id="fam-bar" class="bar-fill" style="width:32%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Hub Stage (wide & open) -->
+  <main id="stage">
+
+    <!-- Familiarity strip (thin and understated) -->
+    <div id="familiarity-strip" aria-hidden="true">
+      <div class="strip-fill" style="width:32%"></div>
+    </div>
+
+    <!-- Event slots row -->
+    <section id="events-row">
+      <article class="event-slot" data-index="0">
+        <div class="event-empty">Empty</div>
+      </article>
+      <article class="event-slot" data-index="1">
+        <div class="event-empty">Empty</div>
+      </article>
+      <article class="event-slot" data-index="2">
+        <div class="event-empty">Empty</div>
+      </article>
+    </section>
+
+    <!-- Action Buttons (image buttons) -->
+    <section id="actions">
+      <button class="img-btn" data-source="hub" title="Explore Hub">
+        <img src="images/btn-explore-hub.png" alt="Explore Hub"/>
+        <span>Explore Hub</span>
+      </button>
+      <button class="img-btn" data-source="player" title="Player Events">
+        <img src="images/btn-player.png" alt="Player Events"/>
+        <span>Player Events</span>
+      </button>
+      <button class="img-btn" data-source="special" title="Special Events">
+        <img src="images/btn-special.png" alt="Special Events"/>
+        <span>Special Events</span>
+      </button>
+    </section>
+
+    <!-- Discovered Locations (image buttons, free-floating) -->
+    <section id="locations">
+      <h3>Discovered Locations</h3>
+      <div class="loc-grid">
+        <button class="loc-btn">
+          <img src="images/loc-inn.png" alt="Frostbound Inn"/>
+          <span>Frostbound Inn</span>
+        </button>
+        <button class="loc-btn">
+          <img src="images/loc-shrine.png" alt="Old Shrine"/>
+          <span>Old Shrine</span>
+        </button>
+        <button class="loc-btn">
+          <img src="images/loc-market.png" alt="Wayfarer Market"/>
+          <span>Wayfarer Market</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Event Card Template -->
+  <template id="event-template">
+    <div class="event-card">
+      <div class="event-img-wrap">
+        <img src="" alt="" class="event-img"/>
+      </div>
+      <div class="event-info">
+        <h4 class="event-title"></h4>
+        <p class="event-snippet"></p>
+      </div>
+      <div class="event-actions">
+        <button class="enter-btn">Enter</button>
+        <button class="remove-btn" aria-label="Remove event">×</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="hub.js" defer></script>
+</body>
 </html>

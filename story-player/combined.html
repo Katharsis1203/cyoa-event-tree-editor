@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elven Princess — Hub + Node (Single Page)</title>
+
+  <!-- Keep both stylesheets -->
+  <link rel="stylesheet" href="hub.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* View toggles */
+    #hub-view { display: block; }
+    #node-view { display: none; }
+    body.hub-bg {
+      background: #0b0f14 url('images/hub-bg.jpg') center/cover no-repeat fixed;
+    }
+  </style>
+</head>
+<body class="hub-bg">
+
+  <!-- ========== HUB VIEW ========== -->
+  <div id="hub-view">
+    <header id="tabbar">
+      <button class="tab" data-panel="character">Character</button>
+      <button class="tab" data-panel="inventory">Inventory</button>
+      <button class="tab" data-panel="quests">Quests</button>
+      <button class="tab" data-panel="status">Status</button>
+    </header>
+
+    <section id="panels">
+      <div id="panel-character" class="panel">
+        <div class="panel-inner">
+          <h2>Character</h2>
+          <div class="panel-grid">
+            <div class="portrait placeholder">Portrait</div>
+            <div class="stats">
+              <p><strong>Name:</strong> High Elven Princess</p>
+              <p><strong>Level:</strong> 5</p>
+              <p><strong>Traits:</strong> Exiled, Noble Bearing</p>
+              <p><strong>Status Effects:</strong> None</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-inventory" class="panel">
+        <div class="panel-inner">
+          <h2>Inventory</h2>
+          <div class="inventory-grid">
+            <div class="slot">1</div><div class="slot">2</div><div class="slot">3</div><div class="slot">4</div>
+            <div class="slot">5</div><div class="slot">6</div><div class="slot">7</div><div class="slot">8</div>
+            <div class="slot">9</div><div class="slot">10</div><div class="slot">11</div><div class="slot">12</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-quests" class="panel">
+        <div class="panel-inner">
+          <h2>Quests</h2>
+        </div>
+      </div>
+
+      <div id="panel-status" class="panel">
+        <div class="panel-inner">
+          <h2>Status</h2>
+          <div class="panel-grid">
+            <div>
+              <p><strong>Health:</strong> 78/100</p>
+              <p><strong>Stamina:</strong> 52/100</p>
+              <p><strong>Familiarity (This Hub):</strong> <span id="fam-val">32%</span></p>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar">
+                <div id="fam-bar" class="bar-fill" style="width:32%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main id="stage">
+      <div id="familiarity-strip" aria-hidden="true">
+        <div class="strip-fill" style="width:32%"></div>
+      </div>
+
+      <section id="events-row">
+        <article class="event-slot" data-index="0"><div class="event-empty">Empty</div></article>
+        <article class="event-slot" data-index="1"><div class="event-empty">Empty</div></article>
+        <article class="event-slot" data-index="2"><div class="event-empty">Empty</div></article>
+      </section>
+
+      <section id="actions">
+        <button class="img-btn" data-source="hub" title="Explore Hub">
+          <img src="images/btn-explore-hub.png" alt="Explore Hub"/>
+          <span>Explore Hub</span>
+        </button>
+        <button class="img-btn" data-source="player" title="Player Events">
+          <img src="images/btn-player.png" alt="Player Events"/>
+          <span>Player Events</span>
+        </button>
+        <button class="img-btn" data-source="special" title="Special Events">
+          <img src="images/btn-special.png" alt="Special Events"/>
+          <span>Special Events</span>
+        </button>
+      </section>
+
+      <section id="locations">
+        <h3>Discovered Locations</h3>
+        <div class="loc-grid">
+          <button class="loc-btn">
+            <img src="images/loc-inn.png" alt="Frostbound Inn"/>
+            <span>Frostbound Inn</span>
+          </button>
+          <button class="loc-btn">
+            <img src="images/loc-shrine.png" alt="Old Shrine"/>
+            <span>Old Shrine</span>
+          </button>
+          <button class="loc-btn">
+            <img src="images/loc-market.png" alt="Wayfarer Market"/>
+            <span>Wayfarer Market</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <template id="event-template">
+      <div class="event-card">
+        <div class="event-img-wrap"><img src="" alt="" class="event-img"/></div>
+        <div class="event-info">
+          <h4 class="event-title"></h4>
+          <p class="event-snippet"></p>
+        </div>
+        <div class="event-actions">
+          <button class="enter-btn">Enter</button>
+          <button class="remove-btn" aria-label="Remove event">×</button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- ========== NODE VIEW ========== -->
+  <div id="node-view">
+    <div class="stage">
+      <div class="center-stack" id="center-stack">
+        <main class="center">
+          <div id="story-box">
+            <input type="file" id="file-input" accept=".json"/>
+            <h1 id="node-title">At the Frozen Gate</h1>
+            <div id="node-image-container">
+              <img id="node-image" alt="Node Image"/>
+              <hr class="node-underline"/>
+            </div>
+            <div id="checks-summary" class="checks" style="display:none"></div>
+            <div id="flavour-block" class="flavour" style="display:none"></div>
+            <p id="node-text">Your story text will appear here…</p>
+            <div id="choices-container"></div>
+          </div>
+        </main>
+
+        <button id="tab-left" class="pull-tab pull-left" title="Character"></button>
+        <button id="tab-right" class="pull-tab pull-right" title="Inventory"></button>
+
+        <aside id="undersheet-left" class="under under-left collapsed parchment">
+          <button class="close-btn" title="Hide">×</button>
+          <div class="under-inner">
+            <div class="portrait">
+              <img src="images/portrait.png" alt="Portrait"/>
+              <div class="who">
+                <div class="name">Highborn Exile</div>
+                <div class="meta">Northern Wastes</div>
+              </div>
+            </div>
+
+            <div class="meters">
+              <div class="meter"><label>Health</label><div class="bar"><i style="width:84%"></i></div></div>
+              <div class="meter"><label>Stamina</label><div class="bar warn"><i style="width:52%"></i></div></div>
+              <div class="meter"><label>Hunger</label><div class="bar bad"><i style="width:28%"></i></div></div>
+            </div>
+
+            <div class="status-tags">
+              <span class="pill">Cold</span>
+              <span class="pill">Cut Wrist</span>
+            </div>
+          </div>
+        </aside>
+
+        <aside id="undersheet-right" class="under under-right collapsed parchment">
+          <button class="close-btn" title="Hide">×</button>
+          <div class="under-inner">
+            <div class="roll-head">
+              <div class="tabs">
+                <button class="tab active" data-tab="inv">Inventory</button>
+                <button class="tab" data-tab="journal">Journal</button>
+                <button class="tab" data-tab="char">Character</button>
+              </div>
+            </div>
+
+            <section id="tab-inv" class="tabpane" style="display:block">
+              <ul class="list">
+                <li><span>Half-Broken Sword</span><button class="ghost">Inspect</button></li>
+                <li><span>Jerky ×2</span><button class="ghost">Eat</button></li>
+                <li><span>Waterskin 3/5</span><button class="ghost">Drink</button></li>
+                <li><span>Twine</span><button class="ghost">Use</button></li>
+              </ul>
+            </section>
+
+            <section id="tab-journal" class="tabpane">
+              <p><strong>Quest:</strong> The Crumbling Gate</p>
+              <p>Find a way beyond the ruined wall. The patrols won’t stay away forever.</p>
+            </section>
+
+            <section id="tab-char" class="tabpane">
+              <ul class="kv">
+                <li><b>Strength</b><span>7</span></li>
+                <li><b>Endurance</b><span>6</span></li>
+                <li><b>Agility</b><span>7</span></li>
+                <li><b>Perception</b><span>6</span></li>
+              </ul>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </div>
+    <div id="notification-box"></div>
+  </div>
+
+  <!-- Load both logic files -->
+  <script src="hub.js"></script>
+  <script>window.inSPA = true;</script>
+<script type="module" src="script.js"></script>
+
+  <!-- Glue with 'wait until displayNode exists' -->
+  <script>
+    (function(){
+      const hubView  = document.getElementById('hub-view');
+      const nodeView = document.getElementById('node-view');
+
+      window.showHub = function(){
+        document.body.classList.add('hub-bg');
+        hubView.style.display = 'block';
+        nodeView.style.display = 'none';
+      };
+      window.showNode = function(){
+        document.body.classList.remove('hub-bg');
+        hubView.style.display = 'none';
+        nodeView.style.display = 'block';
+      };
+
+      function waitForDisplayNode(){
+        return new Promise(resolve => {
+          (function check(){
+            if (typeof window.displayNode === 'function') return resolve();
+            setTimeout(check, 50);
+          })();
+        });
+      }
+
+      window.loadNodeFromFileAndId = async function(file, id){
+        try {
+          const res = await fetch(file);
+          const data = await res.json();
+
+          window.currentNodes = window.currentNodes || {};
+          data.forEach(n => window.currentNodes[n.id] = n);
+          window.currentNodeId = id || (data[0] && data[0].id) || 'start';
+
+          await waitForDisplayNode();
+          window.displayNode(window.currentNodeId);
+        } catch (e) {
+          console.error(e);
+          alert('Failed to load node file: ' + file);
+        }
+      };
+
+      // Override hub enterEvent to switch views instead of navigating
+      window.enterEvent = function(card){
+        const nodeFile = card && card.opens && card.opens.nodeFile;
+        const nodeId   = (card && card.opens && card.opens.nodeId) || 'start';
+        if (!nodeFile) { alert('No node file'); return; }
+        showNode();
+        loadNodeFromFileAndId(nodeFile, nodeId);
+      };
+
+      // Start on hub
+      showHub();
+    })();
+  </script>
+</body>
+</html>

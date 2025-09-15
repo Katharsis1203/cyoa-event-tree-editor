@@ -1,0 +1,104 @@
+[
+  {
+    "id": "start",
+    "title": "Abandoned Wayshrine",
+    "text": "A half-buried altar leans under frost. Offerings long since stolen by wind.",
+    "image": "images/wayshrine.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Brush away the snow",
+        "next": "reveal"
+      },
+      {
+        "type": "simple",
+        "text": "Leave quietly",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "reveal",
+    "title": "Carved Prayer",
+    "text": "The inscription names a forgotten watcher of crossroads.",
+    "image": "images/inscription.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "checked",
+        "text": "Whisper the prayer",
+        "statChecks": [
+          {
+            "stat": "lore",
+            "difficulty": 8
+          },
+          {
+            "stat": "willpower",
+            "difficulty": 7
+          }
+        ],
+        "weighted": {
+          "buckets": [
+            {
+              "id": "success",
+              "threshold": 2,
+              "flavourText": "The wind falls still. You feel seen.",
+              "next": "blessing"
+            },
+            {
+              "id": "partial",
+              "threshold": 1,
+              "flavourText": "A hush; then only cold.",
+              "next": "hub_return"
+            },
+            {
+              "id": "fail",
+              "threshold": 0,
+              "flavourText": "Your breath snags; nothing answers.",
+              "next": "hub_return"
+            }
+          ],
+          "weights": {
+            "lore": {
+              "success": 1,
+              "partial": 1
+            },
+            "willpower": {
+              "success": 1
+            }
+          },
+          "tiebreak": "first"
+        }
+      }
+    ]
+  },
+  {
+    "id": "blessing",
+    "title": "Crossroads Blessing",
+    "text": "A faint warmth pools in your chest; your steps feel lighter.",
+    "image": "images/blessing.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "Return to the hub",
+        "next": "hub_return"
+      }
+    ]
+  },
+  {
+    "id": "hub_return",
+    "title": "Back to Camp",
+    "text": "The shrine fades into white as you retrace your path.",
+    "image": "images/hub.png",
+    "background": "images/ice_gate.png",
+    "choices": [
+      {
+        "type": "simple",
+        "text": "(Return to hub)",
+        "next": "HUB"
+      }
+    ]
+  }
+]
