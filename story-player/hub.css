@@ -223,32 +223,36 @@
     z-index: 1;
   }
   #location-portrait {
-    position: relative;
-    background: #111418;
-    border: 1px solid rgba(0,0,0,.35);
-    overflow: hidden;
-    padding: 0;
-  }
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: rgba(250,238,210,0.9);
+  backdrop-filter: blur(6px) saturate(1.05);
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.25);
+}
   #location-portrait img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    border-radius: 0;
-    filter: none;
-  }
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: .95;
+}
   #location-portrait .location-title {
-    position: absolute;
-    left: 12px;
-    bottom: 10px;
-    margin: 0;
-    padding: 4px 10px;
-    background: rgba(0,0,0,.45);
-    color: #fff;
-    font-weight: 700;
-    border-radius: 6px;
-    letter-spacing: .02em;
-  }
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 12px;
+  background: rgba(250,238,210,.78);
+  backdrop-filter: blur(4px);
+  color: #2b2b2b;
+  font-weight: 800;
+  font-size: 1rem;
+  border-radius: 8px;
+  letter-spacing: .02em;
+  z-index: 2;
+}
   
   /* =========================
      Buttons: Image-Based
@@ -348,7 +352,16 @@
   }
   @media (max-width: 900px){
     #hub-top { grid-template-columns: 1fr; gap: 12px; }
-    #location-portrait { height: 200px; z-index: 2; }
+    #location-portrait {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: rgba(250,238,210,0.9);
+  backdrop-filter: blur(6px) saturate(1.05);
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.25);
+}
     #hub-top .button-column { align-items: center; z-index: 1; }
     #location-wrap { flex-direction: column; padding: 12px; }
     #utility-rail { border-left: none; padding-left: 0; max-height: none; 
