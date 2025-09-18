@@ -284,7 +284,6 @@
     height: 100%;
     object-fit: cover;
     opacity: .6;
-    filter: blur(1.5px);
     z-index: 0;
   }
   .img-btn span,
@@ -352,7 +351,11 @@
     #location-portrait { height: 200px; z-index: 2; }
     #hub-top .button-column { align-items: center; z-index: 1; }
     #location-wrap { flex-direction: column; padding: 12px; }
-    #utility-rail { border-left: none; padding-left: 0; max-height: none; }
+    #utility-rail { border-left: none; padding-left: 0; max-height: none; 
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
   }
   @media (max-width: 700px){
     #hub-top .img-btn { width: 260px; height: 78px; }
@@ -380,14 +383,13 @@
     margin: 30px auto;
     display: flex;
     gap: 16px;
-    padding: 16px;
     background: rgba(250,238,210,.95);
     border: 1px solid rgba(0,0,0,.35);
     box-shadow: 0 4px 18px rgba(0,0,0,.25);
   }
   #location-info {
     flex: 1;
-    padding: 0;
+    padding: 16px;
   }
   .info-name {
     font-size: 1.3rem;
@@ -484,7 +486,11 @@
     background: none;
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
+  
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
   #utility-rail::-webkit-scrollbar {
     display: none;
   }
@@ -552,7 +558,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(1px);
   z-index: 0;
 }
 
@@ -585,3 +590,147 @@
 }
 
 
+
+
+
+
+
+/* === Utility Rail Buttons (single-column flex) === */
+#utility-rail{
+  width: 320px;
+  border-left: 1px solid rgba(0,0,0,.25);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* flush stack; set to 8px if you want spacing */
+  background: none;
+  margin: 0;
+
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.util-btn{
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100px;
+  border: 1px solid rgba(0,0,0,.25);
+  background: rgba(250,238,210,0.9);
+  box-shadow: 0 3px 14px rgba(0,0,0,.22);
+  backdrop-filter: blur(6px) saturate(1.05);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* collapse adjacent borders so the column looks seamless */
+.util-btn + .util-btn { border-top-width: 0; }
+
+.util-btn img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .9;
+  z-index: 0;
+  object-position: left;
+}
+
+.util-btn:hover{
+  filter: brightness(1.08);
+  box-shadow: inset 0 0 6px rgba(0,0,0,.12);
+}
+
+/* Hover labels for util buttons (like action buttons) */
+.util-btn::after {
+  content: attr(title);
+  position: absolute;
+  top: 50%;
+  right: -150%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.4rem; /* smaller than action buttons */
+  font-weight: 800;
+  letter-spacing: .03em;
+  color: #f0e0c0;
+  text-shadow: 0 3px 6px rgba(0,0,0,.6);
+  white-space: nowrap;
+  opacity: 0;
+  transition: right .3s ease, opacity .3s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+.util-btn:hover::after {
+  right: 8px;
+  opacity: 1;
+}
+/* wider */
+  border-left: 1px solid rgba(0,0,0,.25);
+  padding: 0; /* no padding left or top */
+  display: flex;
+  flex-direction: column;
+  max-height: none;
+  overflow: visible;
+  background: none;
+  margin: 0; /* no margin top or right */
+}
+
+
+
+.util-btn{
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 150px;
+  border: none; /* unified border handled by grid container */
+  background: rgba(250,238,210,0.9);
+  box-shadow: none;
+  backdrop-filter: blur(6px) saturate(1.05);
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0; /* remove margin */
+}
+
+
+
+.util-btn span{
+  position: relative;
+  width: 100%;
+  text-align: center;
+  padding: 6px 6px 7px;
+  background: rgba(250,238,210,.78);
+  backdrop-filter: blur(4px);
+  color: #2b2b2b;
+  font-weight: 800;
+  font-size: .95rem;
+  letter-spacing: .02em;
+  text-shadow: 0 1px 2px rgba(255,255,255,.35);
+  z-index: 1;
+  margin: 0;
+}
+
+.util-btn:hover{
+  filter: brightness(1.08);
+  box-shadow: inset 0 0 6px rgba(0,0,0,.12);
+}
+
+@media (max-width: 900px){
+  
+  .util-btn{ height: 150px; }
+  .util-btn span{ font-size: .9rem; }
+}
+@media (max-width: 900px){
+  
+  .util-btn{ height: 150px; }
+  .util-btn span{ font-size: .9rem; }
+}
+@media (max-width: 900px){
+  
+  .util-btn{ height: 150px; }
+  .util-btn span{ font-size: .9rem; }
+}
