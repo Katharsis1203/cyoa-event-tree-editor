@@ -1,5 +1,20 @@
+
+function applyHubBackground(bg) {
+  try {
+    if (bg) {
+      document.body.style.backgroundImage = `url('${bg}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+    } else {
+      document.body.style.backgroundImage = '';
+    }
+    document.body.classList.add('hub-bg');
+  } catch (e) { }
+}
+
 // hub.js — SPA-ready hub with node-image peek, caching, no delete button, full-card click
-(function(){
+(function () {
   let hubData = null;
   const state = { events: [null, null, null] };
   let slots = [];
@@ -9,27 +24,27 @@
   const log = (...args) => console.log("[HUB]", ...args);
   const warn = (...args) => console.warn("[HUB]", ...args);
 
-  const player = { stats:{}, relationships:{}, flags:{} }; // placeholder
+  const player = { stats: {}, relationships: {}, flags: {} }; // placeholder
 
   function requirementsMet(reqs, player) {
     if (!reqs || !reqs.length) return true;
     return reqs.every(req => {
       if (req.type === 'stat') {
-        const val = (player.stats||{})[req.key] ?? 0;
+        const val = (player.stats || {})[req.key] ?? 0;
         if (req.gte !== undefined && val < req.gte) return false;
         if (req.lte !== undefined && val > req.lte) return false;
-        if (req.eq  !== undefined && val !== req.eq) return false;
+        if (req.eq !== undefined && val !== req.eq) return false;
         return true;
       }
       if (req.type === 'relationship') {
-        const val = (player.relationships||{})[req.key] ?? 0;
+        const val = (player.relationships || {})[req.key] ?? 0;
         if (req.gte !== undefined && val < req.gte) return false;
         if (req.lte !== undefined && val > req.lte) return false;
-        if (req.eq  !== undefined && val !== req.eq) return false;
+        if (req.eq !== undefined && val !== req.eq) return false;
         return true;
       }
       if (req.type === 'flag') {
-        return !!((player.flags||{})[req.name]);
+        return !!((player.flags || {})[req.name]);
       }
       return true;
     });
@@ -48,7 +63,7 @@
 
   function getEligibleFrom(sourceKey) {
     if (!hubData || !Array.isArray(hubData.cards)) return [];
-    const keyToCategory = { hub:'life', player:'player', special:'special' };
+    const keyToCategory = { hub: 'life', player: 'player', special: 'special' };
     const wantCat = keyToCategory[sourceKey] ?? null;
     const out = hubData.cards.filter(card => {
       if (wantCat && card.category !== wantCat) return false;
@@ -58,10 +73,10 @@
     return out;
   }
 
-  async function getNodeImage(ev){
+  async function getNodeImage(ev) {
     if (ev.opens?.image) return ev.opens.image;
     const file = ev.opens?.nodeFile;
-    const id   = ev.opens?.nodeId || 'start';
+    const id = ev.opens?.nodeId || 'start';
     if (!file) return '';
     if (!nodeCache[file]) {
       try {
@@ -71,7 +86,7 @@
         const dict = {};
         data.forEach(n => dict[n.id] = n);
         nodeCache[file] = dict;
-      } catch(e){
+      } catch (e) {
         warn('Failed to load node file for image', file, e);
         nodeCache[file] = {};
       }
@@ -79,13 +94,24 @@
     return nodeCache[file][id]?.image || '';
   }
 
-  
 
 
-async function renderSlots() {
+
+  async function renderSlots() {
     if (!tpl) { warn("Missing #event-template"); return; }
     for (let i = 0; i < slots.length; i++) {
       const slotEl = slots[i];
+      // retrigger animation on the parchment container itself
+      slotEl.classList.remove('deal-in');
+      void slotEl.offsetWidth; // reflow to restart animation
+      slotEl.style.animationDelay = (i * 220) + 'ms';
+      slotEl.classList.add('deal-in');
+      // remove the animation class after it finishes, so hover transforms can take over
+      slotEl.addEventListener('animationend', () => {
+        slotEl.classList.remove('deal-in');
+        slotEl.style.animationDelay = '';
+      }, { once: true });
+
       slotEl.innerHTML = '';
       const ev = state.events[i];
       if (!ev) {
@@ -126,7 +152,7 @@ async function renderSlots() {
 
   function onPlayCard(slotIndex, card) {
     const nodeFile = card?.opens?.nodeFile;
-    const nodeId   = card?.opens?.nodeId || 'start';
+    const nodeId = card?.opens?.nodeId || 'start';
     if (!nodeFile) { warn("Card missing opens.nodeFile", card); return; }
 
     if (typeof window.showNode === 'function' && typeof window.loadNodeFromFileAndId === 'function') {
@@ -172,6 +198,13 @@ async function renderSlots() {
   document.addEventListener('DOMContentLoaded', () => {
     tpl = document.getElementById('event-template');
     slots = Array.from(document.querySelectorAll('.event-slot'));
+    // Give each card holder a small random tilt and make it focusable
+    slots.forEach(slot => {
+      const tilt = (Math.random() * 6 - 3).toFixed(2) + 'deg'; // −3°..+3°
+      slot.style.setProperty('--slot-tilt', tilt);
+      slot.tabIndex = 0; // so :focus-within works from keyboard too
+    });
+
     actionButtons = Array.from(document.querySelectorAll('.img-btn'));
     actionButtons.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -183,3 +216,5 @@ async function renderSlots() {
     loadHubJson().catch(e => console.error(e));
   });
 })();
+
+try { if (window.hubBackground) applyHubBackground(window.hubBackground); } catch (e) { }

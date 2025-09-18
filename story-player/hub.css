@@ -1,424 +1,587 @@
-/* ========== Global ========== */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+/* =========================
+   Global
+   ========================= */
+   * { box-sizing: border-box; }
+   html, body { height: 100%; }
+   
+   body {
+     margin: 0;
+     font-family: ui-serif, Georgia, 'Times New Roman', serif;
+     color: #2b2b2b;
+     background: #0b0f14 url('images/hub-bg.jpg') center/cover no-repeat fixed;
+   }
+   body::after {
+     content: "";
+     position: fixed;
+     inset: 0;
+     pointer-events: none;
+     background: radial-gradient(transparent 55%, rgba(0,0,0,.35) 100%);
+   }
+   
+   /* =========================
+      Pull-Down Tabs & Panels
+      ========================= */
+   #tabbar {
+     position: fixed;
+     top: 0; left: 0; width: 100%;
+     display: flex; justify-content: center; gap: 10px;
+     padding: 6px 10px;
+     z-index: 50;
+     pointer-events: none;
+   }
+   #tabbar .tab {
+     pointer-events: auto;
+     background: rgba(250, 238, 210, 0.92);
+     border: 1px solid rgba(60,40,20,.35);
+     padding: 6px 12px;
+     border-bottom-left-radius: 10px;
+     border-bottom-right-radius: 10px;
+     font-weight: 600;
+     text-transform: uppercase;
+     letter-spacing: .04em;
+     box-shadow: 0 2px 8px rgba(0,0,0,.25);
+     cursor: pointer;
+     margin-left: -20px;
+     transition: transform .3s ease, filter .3s ease, padding .3s ease, width .3s ease, margin .3s ease;
+   }
+   #tabbar .tab:hover {
+     transform: translateX(20px);
+     filter: brightness(1.02);
+   }
+   
+   #panels {
+     position: fixed;
+     top: 34px; left: 0; width: 100%;
+     z-index: 45;
+     pointer-events: none;
+   }
+   .panel {
+     max-height: 0;
+     overflow: hidden;
+     transition: max-height .25s ease;
+     pointer-events: none;
+   }
+   .panel.open {
+     max-height: 60vh;
+     pointer-events: auto;
+   }
+   .panel .panel-inner {
+     margin: 0 auto;
+     width: min(1200px, 95vw);
+     background: rgba(250, 238, 210, 0.95);
+     border: 1px solid rgba(60,40,20,.35);
+     box-shadow: 0 6px 16px rgba(0,0,0,.35);
+     border-radius: 10px;
+     padding: 16px 18px 20px;
+   }
+   .panel-grid {
+     display: grid;
+     grid-template-columns: 220px 1fr;
+     gap: 16px;
+   }
+   .portrait.placeholder {
+     display: grid;
+     place-items: center;
+     background: rgba(255,255,255,.35);
+     border: 1px solid rgba(60,40,20,.35);
+     border-radius: 8px;
+   }
+   .inventory-grid {
+     display: grid;
+     grid-template-columns: repeat(6, 1fr);
+     gap: 8px;
+   }
+   .inventory-grid .slot {
+     aspect-ratio: 1/1;
+     background: rgba(255,255,255,.4);
+     border: 1px solid rgba(0,0,0,.2);
+     border-radius: 6px;
+     display: grid;
+     place-items: center;
+     font-weight: 600;
+   }
+   .quests { margin: 0; padding-left: 18px; }
+   .bar-wrap { display: grid; align-items: center; }
+   .bar {
+     width: 100%;
+     height: 10px;
+     background: rgba(0,0,0,.15);
+     border: 1px solid rgba(0,0,0,.2);
+     border-radius: 99px;
+     overflow: hidden;
+   }
+   .bar-fill {
+     height: 100%;
+     background: linear-gradient(90deg, #7fbf7f, #b7e3a6);
+   }
+   
+   /* =========================
+      Hub Stage
+      ========================= */
+   #stage {
+     position: relative;
+     min-height: 100vh;
+     padding: 90px 24px 48px;
+   }
+   #familiarity-strip {
+     width: min(1200px, 95vw);
+     height: 6px;
+     margin: 0 auto 14px;
+     border-radius: 99px;
+     background: rgba(255,255,255,.25);
+     overflow: hidden;
+     border: 1px solid rgba(255,255,255,.2);
+   }
+   #familiarity-strip .strip-fill {
+     height: 100%;
+     background: linear-gradient(90deg, #8cc08c, #d6f2b8);
+   }
+   
+   /* =========================
+      Events Row & Cards
+      ========================= */
+   #events-row {
+     width: min(1200px, 95vw);
+     margin: 0 auto;
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     gap: 16px;
+   }
+   .event-slot {
+     height: 220px;
+     min-height: 220px;
+     background: url('images/parchment.png') center/100% 100% no-repeat;
+     border-radius: 10px;
+     padding: 10px;
+     display: grid;
+     align-content: stretch;
+     transform: rotate(var(--slot-tilt, 0deg));
+     transform-origin: center;
+     filter: drop-shadow(0 8px 4px rgba(0,0,0,0.35));
+     transition: transform .22s ease, filter .22s ease;
+   }
+   .event-card {
+     width: 100%;
+     height: 100%;
+     border-radius: 8px;
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+     --fade: 40px;
+     mask-image:
+       linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
+       linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+     mask-composite: intersect;
+   }
+   .event-empty {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: 700;
+     letter-spacing: .06em;
+     opacity: .7;
+   }
+   .event-slot:hover,
+   .event-slot:focus-within {
+     --slot-tilt: 0deg;
+     transform: rotate(0deg) scale(1.05);
+     filter: drop-shadow(0 16px 32px rgba(0,0,0,0.45));
+   }
+   @keyframes parchmentDealIn {
+     0% {
+       opacity: 0;
+       transform: translateY(-24px) rotate(calc(var(--slot-tilt, 0deg) - 6deg)) scale(0.98);
+       filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+     }
+     70% {
+       opacity: 1;
+       transform: translateY(6px) rotate(calc(var(--slot-tilt, 0deg) + 1deg)) scale(1.02);
+       filter: drop-shadow(0 16px 28px rgba(0,0,0,0.35));
+     }
+     100% {
+       opacity: 1;
+       transform: translateY(0) rotate(var(--slot-tilt, 0deg)) scale(1);
+       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
+     }
+   }
+   .event-slot.deal-in {
+     animation: parchmentDealIn 800ms cubic-bezier(.2,.8,.2,1) both;
+     will-change: transform, opacity, filter;
+   }
+/* =========================
+   Hub Top: Portrait + Buttons
+   ========================= */
+   #hub-top {
+    width: min(1200px, 95vw);
+    margin: 0 auto 16px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  #location-portrait {
+    position: relative;
+    background: #111418;
+    border: 1px solid rgba(0,0,0,.35);
+    overflow: hidden;
+    padding: 0;
+  }
+  #location-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
+    filter: none;
+  }
+  #location-portrait .location-title {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    margin: 0;
+    padding: 4px 10px;
+    background: rgba(0,0,0,.45);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 6px;
+    letter-spacing: .02em;
+  }
+  
+  /* =========================
+     Buttons: Image-Based
+     ========================= */
 
-body {
-  margin: 0;
-  font-family: ui-serif, Georgia, 'Times New Roman', serif;
-  color: #2b2b2b;
-  background: #0b0f14 url('images/hub-bg.jpg') center/cover no-repeat fixed;
+  .button-column{
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: start;
+    gap: 8px;
+  }
+  .img-btn,
+  .loc-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: rgba(250,238,210,0.9);
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px) saturate(1.05);
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+    height: 120px;
+  }
+  .loc-btn img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .6;
+    filter: blur(1.5px);
+    z-index: 0;
+  }
+  .img-btn span,
+  .loc-btn span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(250,238,210,.75);
+    backdrop-filter: blur(4px);
+    color: #2b2b2b;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 6px 0;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(255,255,255,.4);
+  }
+  .img-btn:hover,
+  .loc-btn:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 6px 24px rgba(0,0,0,.3);
+  }
+  
+  /* =========================
+     Locations Grid
+     ========================= */
+  #locations {
+    width: min(1200px, 95vw);
+    margin: 10px auto 0;
+  }
+  #locations h3 {
+  margin: 10px 0 8px;
+  letter-spacing: .03em;
+  padding: 16px;
+  background: rgba(250,238,210,.95);
+  box-shadow: 0 4px 18px rgba(0,0,0,.25);
+  border: 1px solid rgba(0,0,0,.35);
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(transparent 55%, rgba(0,0,0,.35) 100%);
-}
-
-/* Pull-Down Tabs */
-#tabbar {
-  position: fixed;
-  top: 0;
-  left: 0;
+  .loc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .loc-btn {
+    height: 250px;
+    padding: 10px 8px;
+  }
+  
+  /* =========================
+     Responsive Grid & Buttons
+     ========================= */
+  @media (max-width: 1200px){
+    #hub-top .img-btn { width: 280px; height: 82px; font-size: 1.05rem; }
+    .loc-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .loc-btn { height: 240px; }
+  }
+  @media (max-width: 980px){
+    .panel-grid { grid-template-columns: 1fr; }
+    #events-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px){
+    #hub-top { grid-template-columns: 1fr; gap: 12px; }
+    #location-portrait { height: 200px; z-index: 2; }
+    #hub-top .button-column { align-items: center; z-index: 1; }
+    #location-wrap { flex-direction: column; padding: 12px; }
+    #utility-rail { border-left: none; padding-left: 0; max-height: none; }
+  }
+  @media (max-width: 700px){
+    #hub-top .img-btn { width: 260px; height: 78px; }
+    .img-btn span { font-size: 1rem; }
+    .loc-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+    .loc-btn { height: 220px; }
+  }
+  @media (max-width: 560px){
+    #hub-top .button-column { align-items: stretch; }
+    .img-btn { width: 100%; max-width: 360px; height: 74px; margin: 0 auto; }
+    .loc-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .loc-btn { height: 200px; }
+  }
+  @media (max-width: 380px){
+    .img-btn { height: 64px; }
+    .img-btn span { font-size: .95rem; }
+    .loc-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .loc-btn { height: 180px; }
+  }
+/* =========================
+   Location Wrap (Info + Utility Rail)
+   ========================= */
+   #location-wrap {
+    width: min(1200px, 95vw);
+    margin: 30px auto;
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(250,238,210,.95);
+    border: 1px solid rgba(0,0,0,.35);
+    box-shadow: 0 4px 18px rgba(0,0,0,.25);
+  }
+  #location-info {
+    flex: 1;
+    padding: 0;
+  }
+  .info-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #1f242b;
+  }
+  .info-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .chip {
+    display: inline-block;
+    padding: 4px 10px 4px 26px;
+    position: relative;
+    border-radius: 999px;
+    background: rgba(255,255,255,.35);
+    color: #1f242b;
+    font-weight: 600;
+    font-size: .9rem;
+  }
+  .chip::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  .chip.night::before { background-image: url('images/ic-moon.svg'); }
+  .chip.snow::before  { background-image: url('images/ic-snow.svg'); }
+  .chip.temp::before  { background-image: url('images/ic-thermo.svg'); }
+  
+  .info-desc {
+    color: #2b2b2b;
+    opacity: .9;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+  .info-console {
+    height: 140px;
+    overflow: auto;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 6px;
+    background: rgba(255,255,255,.25);
+    padding: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .9rem;
+    line-height: 1.35;
+  }
+  .console-line {
+    padding: 2px 0;
+    white-space: pre-wrap;
+  }
+  .console-line:not(:last-child) {
+    border-bottom: 1px dashed rgba(0,0,0,.08);
+  }
+  .info-extras {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .info-extras .mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.25);
+  }
+  .facts {
+    margin: 0;
+    padding-left: 18px;
+    color: #1f242b;
+    line-height: 1.4;
+  }
+  
+  /* =========================
+     Utility Rail
+     ========================= */
+  #utility-rail {
+    width: 260px;
+    border-left: 1px solid rgba(0,0,0,.25);
+    padding-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 260px;
+    overflow: auto;
+    background: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  #utility-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .util,
+  .ghost {
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 16px 0 16px 28px;
+    color: #2b2b2b;
+  }
+  .util:hover,
+  .ghost:hover {
+    background: rgba(255,255,255,.25);
+    box-shadow: 0 0 6px rgba(0, 0, 0, .12) inset;
+  }
+  
+  /* Responsive Layout for Location Wrap */
+  @media (max-width: 900px){
+    #location-wrap {
+      flex-direction: column;
+      padding: 12px;
+    }
+  }
+       
+.actions-header {
+  margin: 0 0 16px 0;
+  padding: 16px;
+  background: rgba(250,238,210,.95);
+  box-shadow: 0 4px 18px rgba(0,0,0,.25);
+  border: 1px solid rgba(0,0,0,.35);
+  color: #1f242b;
+  text-shadow: none;
+  letter-spacing: .03em;
   width: 100%;
-  display: flex;
+}
+
+#hub-top .button-column .img-btn {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  padding: 8px 16px;
+  display: inline-flex;
   justify-content: center;
-  gap: 10px;
-  padding: 6px 10px;
-  z-index: 50;
-  pointer-events: none;
-}
-#tabbar .tab {
-  pointer-events: auto;
-  background: rgba(250, 238, 210, 0.92);
-  border: 1px solid rgba(60,40,20,.35);
-  padding: 6px 12px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  box-shadow: 0 2px 8px rgba(0,0,0,.25);
-  cursor: pointer;
-  transition: transform .15s ease, filter .15s ease;
-}
-#tabbar .tab:hover { transform: translateY(2px); filter: brightness(0.98); }
-
-#panels {
-  position: fixed;
-  top: 34px;
-  left: 0;
-  width: 100%;
-  z-index: 45;
-  pointer-events: none;
-}
-.panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .25s ease;
-  pointer-events: none;
-}
-.panel.open {
-  max-height: 60vh;
-  pointer-events: auto;
-}
-.panel .panel-inner {
-  margin: 0 auto;
-  width: min(1200px, 95vw);
-  background: rgba(250, 238, 210, 0.95);
-  border: 1px solid rgba(60,40,20,.35);
-  box-shadow: 0 6px 16px rgba(0,0,0,.35);
-  border-radius: 10px;
-  padding: 16px 18px 20px;
-}
-.panel-grid {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-}
-.portrait.placeholder {
-  display: grid;
-  place-items: center;
-  height: 240px;
-  background: rgba(255,255,255,.35);
-  border: 1px solid rgba(60,40,20,.35);
-  border-radius: 8px;
-}
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-.inventory-grid .slot {
-  aspect-ratio: 1/1;
-  background: rgba(255,255,255,.4);
-  border: 1px solid rgba(60,40,20,.35);
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
-  font-weight: 600;
-}
-.quests { margin: 0; padding-left: 18px; }
-.bar-wrap { display: grid; align-items: center; }
-.bar { width: 100%; height: 10px; background: rgba(0,0,0,.15); border-radius: 99px; overflow: hidden; border: 1px solid rgba(0,0,0,.2); }
-.bar-fill { height: 100%; background: linear-gradient(90deg, #7fbf7f, #b7e3a6); }
-
-/* Hub Stage */
-#stage { position: relative; min-height: 100vh; padding: 90px 24px 48px; }
-#familiarity-strip {
-  width: min(1200px, 95vw); height: 6px; margin: 0 auto 14px; border-radius: 99px;
-  background: rgba(255,255,255,.25); overflow: hidden; border: 1px solid rgba(255,255,255,.2);
-}
-#familiarity-strip .strip-fill { height: 100%; background: linear-gradient(90deg, #8cc08c, #d6f2b8); }
-
-#events-row {
-  width: min(1200px, 95vw);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.event-slot {
-  min-height: 180px;
-  background: rgba(255,255,255,.28);
-  border: 1px solid rgba(255,255,255,.35);
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25);
-  padding: 10px;
-  display: grid;
-  align-content: start;
-}
-.event-empty { opacity: .7; text-align: center; font-weight: 600; letter-spacing: .06em; padding-top: 60px; }
-
-.event-card {
-  display: grid;
-  grid-template-columns: 120px 1fr 44px;
-  gap: 10px;
   align-items: center;
-}
-.event-img-wrap {
-  width: 100%; height: 100%; min-height: 110px; border-radius: 8px; overflow: hidden;
-  border: 1px solid rgba(0,0,0,.2); background: rgba(0,0,0,.15);
-}
-.event-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.event-title { margin: 0 0 6px; }
-.event-snippet { margin: 0; opacity: .85; }
-.event-actions { display: grid; gap: 6px; justify-items: center; }
-.event-actions .enter-btn, .event-actions .remove-btn {
-  padding: 6px 10px; background: rgba(255,255,255,.9); border: 1px solid rgba(0,0,0,.25);
-  border-radius: 6px; cursor: pointer;
-}
-.event-actions .remove-btn { width: 32px; height: 32px; border-radius: 50%; font-size: 18px; line-height: 30px; }
-
-#actions {
-  width: min(1200px, 95vw);
-  margin: 18px auto 4px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.img-btn {
-  display: inline-grid; grid-template-rows: auto auto; place-items: center; gap: 6px;
-  padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.28);
-  border: 1px solid rgba(255,255,255,.35); cursor: pointer; transition: transform .12s ease, filter .12s ease;
-}
-.img-btn:hover { transform: translateY(-2px); filter: brightness(1.02); }
-.img-btn img { width: 64px; height: 64px; object-fit: contain; display: block; }
-
-#locations { width: min(1200px, 95vw); margin: 10px auto 0; }
-#locations h3 { margin: 10px 0 8px; color: rgba(255,255,255,.95); text-shadow: 0 1px 2px rgba(0,0,0,.55); letter-spacing: .03em; }
-.loc-grid { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 12px; }
-.loc-btn {
-  display: grid; place-items: center; gap: 6px; padding: 10px 8px; border-radius: 10px;
-  background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35);
-  cursor: pointer; transition: transform .12s ease, filter .12s ease;
-}
-.loc-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
-.loc-btn img { width: 72px; height: 72px; object-fit: contain; display: block; }
-.loc-btn span { color: #f0f0f0; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
-
-@media (max-width: 980px) {
-  .panel-grid { grid-template-columns: 1fr; }
-  #events-row { grid-template-columns: 1fr; }
-  .loc-grid { grid-template-columns: repeat(3, 1fr); }
-}
-/* === Hub Card Overrides (Parchment Holders) === */
-
-.event-slot {
-  /* use parchment background instead of white */
-  background-image: url('images/parchment.png') !important;
-  background-size: cover !important;
-  background-position: center !important;
-
-  /* remove the old white box look */
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-
-  /* kill the inner padding so card fills slot */
-  padding: 0 !important;
-
-  /* optional: set a fixed height if you want uniform slots */
-  min-height: 180px;
-}
-
-.event-slot .event-card {
-  width: 100% !important;
-  height: 100% !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  border: none !important;
-  box-shadow: none !important;
-  display: block !important;
-}
-
-
-/* === Hub Parchment Holder + Edge-Fade Overrides === */
-
-/* Kill the translucent white and switch to parchment */
-#events-row .event-slot {
-  background: none !important; /* removes rgba(255,255,255,.28) */
-  background-image: url('images/parchment.png') !important;
-  background-size: 100% 100% !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-
-  border: none !important;
-  border-radius: 10px !important; /* keep a soft parchment corner */
-  box-shadow: none !important;
-
-  /* Reveal parchment around the image */
-  padding: 10px !important;
-
-  /* Uniform size for empty/filled */
-  height: 220px !important;
-  min-height: 220px !important;
-
-  display: grid !important;
-  align-content: stretch !important;
-  overflow: hidden !important;
-}
-
-/* Card fills the holder minus the parchment padding */
-#events-row .event-slot .event-card {
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 8px !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: block !important;
-
-  /* Edge fade into parchment (mask trick) */
-  --fade: 14px;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  -webkit-mask-composite: destination-in;
-  mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  mask-composite: intersect;
-}
-
-/* Make empty state occupy identical space and show parchment only */
-#events-row .event-slot .event-empty {
-  height: 100% !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: transparent !important;
-  font-weight: 700 !important;
-  letter-spacing: .06em !important;
-  opacity: .7 !important;
-}
-
-
-/* === Updated Edge-Fade Settings (deeper fade) === */
-#events-row .event-slot .event-card {
-  --fade: 40px; /* deeper fade into parchment */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  -webkit-mask-composite: destination-in;
-  mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  mask-composite: intersect;
-}
-
-/* Tighter gaps between cards */
-#hub-layout .card-column #events-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px !important; /* tighter spacing */
-}
-
-/* === Two-column Hub Layout (buttons left stacked, cards horizontal on right) — reset === */
-#hub-layout {
-  width: min(1200px, 95vw);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: auto 1fr; /* left natural width, right fills */
-  gap: 20px;
-  align-items: start;
-}
-
-#hub-layout .button-column {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Keep three cards horizontal; only tighten spacing */
-#hub-layout .card-column #events-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px; /* tighter spacing */
-  width: 100%;
-  margin: 0;
-}
-
-/* === Button sizing to match card row height with two buttons === */
-:root {
-  --card-row-height: 220px; /* matches .event-slot height */
-  --button-gap: 12px;       /* gap between stacked buttons in .button-column */
-}
-
-#hub-layout .button-column {
-  display: flex;
-  flex-direction: column;
-}
-
-#hub-layout .button-column .img-btn {
-  width: 100%;
-  height: calc((var(--card-row-height) - var(--button-gap)) / 2);
-  display: grid;
-  grid-template-rows: auto auto;
-  place-items: center;
-}
-/* === Make action buttons use the same parchment texture as cards === */
-#hub-layout .button-column .img-btn {
-  width: 240px;
-  background: none !important;
-  background-image: url('images/parchment.png') !important;
-  background-size: 100% 100% !important;
-  background-position: center !important;
-  border: none !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-  color: #2b2b2b !important; /* dark text for contrast on parchment */
-  text-shadow: none !important;
+  gap: 10px;
+  background-color: rgba(250,238,210,0.9);
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  backdrop-filter: blur(6px) saturate(1.05);
+  color: #2b2b2b;
+  font-weight: 700;
   cursor: pointer;
+  overflow: hidden;
 }
 
-/* === Align top of buttons with top of cards === */
-#hub-layout {
-  align-items: start !important; /* grid rows start at same vertical line */
+#hub-top .button-column .img-btn img.icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(1px);
+  z-index: 0;
 }
 
-#hub-layout .button-column {
-  margin-top: 10px;
-  padding-top: 0 !important;
+/* Big, clean hover label that overlaps the button image */
+
+.button-column .img-btn::after {
+  content: attr(title);
+  position: absolute;
+  top: 50%;
+  right: -150%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  box-shadow: none;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  color: #f0e0c0;                /* warm parchment-like text */
+  text-shadow: 0 3px 6px rgba(0,0,0,.6); /* strong shadow for contrast */
+  white-space: nowrap;
+  opacity: 0;
+  transition: right .3s ease, opacity .3s ease;
+  z-index: 3;
+  pointer-events: none;
 }
 
-/* === Make action buttons use the same parchment texture as cards === */
-#hub-layout .button-column .img-btn {
-  background: none !important;
-  background-image: url('images/parchment.png') !important;
-  background-size: 100% 100% !important;
-  background-position: center !important;
-  border: none !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-  color: #2b2b2b !important; /* dark text for contrast on parchment */
-  text-shadow: none !important;
-  cursor: pointer;
+.button-column .img-btn:hover::after {
+  right: 0;                      /* slide in more so it overlaps image deeply */
+  opacity: 1;
 }
 
-/* === Button images fill parchment bar and fade at edges (like cards) === */
-#hub-layout .button-column .img-btn {
-  position: relative !important;
-  overflow: hidden !important;
-  padding: 10px !important; /* reveal parchment border around the image */
-  background-image: url('images/parchment.png') !important;
-  background-size: 100% 100% !important;
-  background-position: center !important;
-  border-radius: 10px !important;
-}
 
-/* Hide button label text for clean image tiles */
-#hub-layout .button-column .img-btn span { display: none !important; }
-
-/* Make the inner <img> behave like a background with edge fade */
-#hub-layout .button-column .img-btn img {
-  position: absolute !important;
-  left: 10px; right: 10px; top: 10px; bottom: 10px; /* match padding above */
-  width: calc(100% - 20px) !important;
-  height: calc(100% - 20px) !important;
-  object-fit: cover !important;
-  border-radius: 8px !important;
-  display: block !important;
-
-  /* Edge fade into parchment (same mask approach as cards) */
-  --fade: 40px;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  -webkit-mask-composite: destination-in;
-  mask-image:
-    linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  mask-composite: intersect;
-}

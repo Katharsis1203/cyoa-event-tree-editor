@@ -98,16 +98,18 @@
       <div id="hub-top">
         <div id="location-portrait">
           <img src="images/ice_gate.png" alt="Current Location" />
+          <h3 class="location-title">Current Location</h3>
         </div>
         <div class="button-column">
-          <h3 class="actions-header">Actions</h3>
-          <button class="img-btn" data-source="hub" title="Explore">
-            <img class="icon" src="images/btn-explore-hub.png" alt="" />
-          </button>
-          <button class="img-btn" data-source="player" title="Player">
-            <img class="icon" src="images/btn-player.png" alt="" />
-          </button>
-
+          <button class="img-btn" data-source="hub" title="Explore Hub">
+  <span>Explore Hub</span>
+  <img class="icon" src="images/explore-btn.png" alt=""/>
+</button>
+          <button class="img-btn" data-source="player" title="Player Events">
+  <span>Player Events</span>
+  <img class="icon" src="images/player-btn.png" alt=""/>
+</button>
+         
         </div>
       </div>
 
@@ -128,61 +130,23 @@
         </div>
       </div>
 
-
-      <!-- ===== Location Wrap: Info + Utility Rail (two-column) ===== -->
-
-      <section id="location-wrap" aria-label="Location overview and utilities">
-        <div id="location-info">
-          <div class="info-main">
-            <h2 class="info-name">Frostbound Gate</h2>
-            <div class="info-meta">
-              <span class="chip night">Nightfall</span>
-              <span class="chip snow">Heavy Snow</span>
-              <span class="chip temp">-12°C</span>
-            </div>
-            <p class="info-desc">
-              Ancient ice-choked gate. Patrol tracks vanish near the cliffs.
-              The air bites; torches gutter in the wind.
-            </p>
-            <div class="info-console" id="info-console">
-              <div class="console-line">[System] Area cold. Tracks diverge east.</div>
-              <div class="console-line">[Note] Torches sputter in the wind.</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="utility-rail" aria-label="Utility navigation">
-          <button class="util">Character</button>
-          <button class="util">Inventory</button>
-          <button class="util">Quests</button>
-          <button class="util">Status</button>
-          <div class="rail-actions">
-            <button class="ghost">Rest 1h</button>
-            <button class="ghost">Make Camp</button>
-          </div>
-        </div>
-      </section>
-
       <section id="locations">
         <h3>Discovered Locations</h3>
         <div class="loc-grid">
           <button class="loc-btn">
-            <img src="images/frostbite-inn.png" alt="Frostbound Inn" />
+            <img src="images/loc-inn.png" alt="Frostbound Inn" />
             <span>Frostbound Inn</span>
           </button>
           <button class="loc-btn">
-            <img src="images/old-shrine.png" alt="Old Shrine" />
+            <img src="images/loc-shrine.png" alt="Old Shrine" />
             <span>Old Shrine</span>
           </button>
           <button class="loc-btn">
-            <img src="images/wayfarer-wagon.png" alt="Wayfarer Market" />
+            <img src="images/loc-market.png" alt="Wayfarer Market" />
             <span>Wayfarer Market</span>
           </button>
         </div>
       </section>
-
-
-
     </main>
 
     <template id="event-template">
@@ -240,46 +204,46 @@
               <span class="pill">Cut Wrist</span>
             </div>
           </div>
-      </div>
+        </aside>
 
-      <aside id="undersheet-right" class="under under-right collapsed parchment">
-        <button class="close-btn" title="Hide">×</button>
-        <div class="under-inner">
-          <div class="roll-head">
-            <div class="tabs">
-              <button class="tab active" data-tab="inv">Inventory</button>
-              <button class="tab" data-tab="journal">Journal</button>
-              <button class="tab" data-tab="char">Character</button>
+        <aside id="undersheet-right" class="under under-right collapsed parchment">
+          <button class="close-btn" title="Hide">×</button>
+          <div class="under-inner">
+            <div class="roll-head">
+              <div class="tabs">
+                <button class="tab active" data-tab="inv">Inventory</button>
+                <button class="tab" data-tab="journal">Journal</button>
+                <button class="tab" data-tab="char">Character</button>
+              </div>
             </div>
+
+            <section id="tab-inv" class="tabpane" style="display:block">
+              <ul class="list">
+                <li><span>Half-Broken Sword</span><button class="ghost">Inspect</button></li>
+                <li><span>Jerky ×2</span><button class="ghost">Eat</button></li>
+                <li><span>Waterskin 3/5</span><button class="ghost">Drink</button></li>
+                <li><span>Twine</span><button class="ghost">Use</button></li>
+              </ul>
+            </section>
+
+            <section id="tab-journal" class="tabpane">
+              <p><strong>Quest:</strong> The Crumbling Gate</p>
+              <p>Find a way beyond the ruined wall. The patrols won’t stay away forever.</p>
+            </section>
+
+            <section id="tab-char" class="tabpane">
+              <ul class="kv">
+                <li><b>Strength</b><span>7</span></li>
+                <li><b>Endurance</b><span>6</span></li>
+                <li><b>Agility</b><span>7</span></li>
+                <li><b>Perception</b><span>6</span></li>
+              </ul>
+            </section>
           </div>
-
-          <section id="tab-inv" class="tabpane" style="display:block">
-            <ul class="list">
-              <li><span>Half-Broken Sword</span><button class="ghost">Inspect</button></li>
-              <li><span>Jerky ×2</span><button class="ghost">Eat</button></li>
-              <li><span>Waterskin 3/5</span><button class="ghost">Drink</button></li>
-              <li><span>Twine</span><button class="ghost">Use</button></li>
-            </ul>
-          </section>
-
-          <section id="tab-journal" class="tabpane">
-            <p><strong>Quest:</strong> The Crumbling Gate</p>
-            <p>Find a way beyond the ruined wall. The patrols won’t stay away forever.</p>
-          </section>
-
-          <section id="tab-char" class="tabpane">
-            <ul class="kv">
-              <li><b>Strength</b><span>7</span></li>
-              <li><b>Endurance</b><span>6</span></li>
-              <li><b>Agility</b><span>7</span></li>
-              <li><b>Perception</b><span>6</span></li>
-            </ul>
-          </section>
-        </div>
+        </aside>
+      </div>
     </div>
-  </div>
-  </div>
-  <div id="notification-box"></div>
+    <div id="notification-box"></div>
   </div>
 
   <!-- Load both logic files -->
